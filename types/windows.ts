@@ -87,6 +87,8 @@ export interface WindowInstance {
   };
   minimized?: boolean;
   maximized?: boolean;
+  zIndex?: number;      // For layering and click-to-front
+  focused?: boolean;    // For focus management
 }
 
 /**

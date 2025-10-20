@@ -8,9 +8,10 @@ import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 
 export function WorkspaceGrid() {
-  const { windows, updateLayout } = useWindows();
+  const { windows, updateLayout, focusWindow } = useWindows();
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(1200);
+  const [isDragging, setIsDragging] = useState(false);
 
   // Update container width on mount and resize
   useEffect(() => {
@@ -55,18 +56,49 @@ export function WorkspaceGrid() {
     updateLayout(newLayout);
   };
 
+  const handleDragStart = () => {
+    setIsDragging(true);
+  };
+
+  const handleDragStop = () => {
+    setIsDragging(false);
+  };
+
+  const handleResizeStart = () => {
+    setIsDragging(true);
+  };
+
+  const handleResizeStop = () => {
+    setIsDragging(false);
+  };
+
   return (
-    <div ref={containerRef} className="h-full w-full p-2 bg-slate-950">
+    <div
+      ref={containerRef}
+      className="h-full w-full overflow-hidden"
+      style={{ background: 'var(--bg-primary)' }}
+    >
       <GridLayout
-        className="layout"
+        className="layout h-full"
         layout={layouts}
         cols={12}
         rowHeight={80}
         width={containerWidth}
+        autoSize={false}
         onLayoutChange={handleLayoutChange}
         draggableHandle=".window-header"
-        compactType={null}
+        draggableCancel=".no-drag"
+        compactType="vertical"
         preventCollision={false}
+        isBounded={true}
+        useCSSTransforms={true}
+        margin={[8, 8]}
+        containerPadding={[8, 8]}
+        resizeHandles={['se', 's', 'e']}
+        onDragStart={handleDragStart}
+        onDragStop={handleDragStop}
+        onResizeStart={handleResizeStart}
+        onResizeStop={handleResizeStop}
       >
         {windows.map(window => (
           <div key={window.id}>

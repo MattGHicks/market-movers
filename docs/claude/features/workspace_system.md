@@ -1,0 +1,278 @@
+# Feature: Multi-Window Workspace System
+
+**Date Started:** 2025-10-20
+**Status:** Complete
+**Owner:** Claude Code
+**Version:** 0.3.0
+
+## Overview
+
+Complete UI refactor from simple dashboard to professional trading platform with Trade-Ideas-inspired multi-window workspace system. Users can create unlimited windows, drag/resize them, customize columns, and save layouts.
+
+## Motivation
+
+User feedback indicated the need for a more professional interface matching trading platforms like Trade-Ideas, with:
+- Multiple customizable windows
+- Drag-and-drop positioning
+- Resizable panels
+- Custom column configuration
+- Workspace persistence
+
+## Technical Details
+
+### Components Created
+
+**Core System:**
+- `context/WindowContext.tsx` - Global window state management
+- `components/WorkspaceGrid.tsx` - Responsive grid layout manager
+- `components/WindowFrame.tsx` - Reusable window wrapper with controls
+- `components/MenuBar.tsx` - Top menu bar for window creation
+- `types/windows.ts` - Window type definitions
+
+**Window Types:**
+- `components/windows/ScannerWindow.tsx` - Stock scanner with custom columns
+- `components/windows/NewsWindow.tsx` - Real-time news feed
+- `components/windows/AlertsWindow.tsx` - Alert notifications display
+
+### Architecture
+
+```
+┌─────────────────────────────────────────────┐
+│              MenuBar                        │
+│  [New] [Workspaces] [Settings]             │
+└─────────────────────────────────────────────┘
+┌─────────────────────────────────────────────┐
+│         WorkspaceGrid (react-grid-layout)   │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  │
+│  │ Scanner  │  │  News    │  │  Alerts  │  │
+│  │ Window   │  │  Window  │  │  Window  │  │
+│  └──────────┘  └──────────┘  └──────────┘  │
+│                                             │
+│  WindowContext manages all window state     │
+└─────────────────────────────────────────────┘
+```
+
+### State Management
+
+**WindowContext** manages:
+- `windows: WindowInstance[]` - Array of all active windows
+- `addWindow()` - Create new window
+- `removeWindow()` - Close window
+- `updateWindow()` - Modify window properties
+- `updateLayout()` - Handle drag/resize
+- `saveWorkspace()` - Persist layout to localStorage
+- `loadWorkspace()` - Restore saved layout
+
+### Window Instance Type
+
+```typescript
+interface WindowInstance {
+  id: string;
+  title: string;
+  type: WindowType; // 'scanner' | 'news' | 'alerts' | etc.
+  config: WindowConfig; // Type-specific configuration
+  layout: {
+    x: number; // Grid position X
+    y: number; // Grid position Y
+    w: number; // Width in grid units
+    h: number; // Height in grid units
+    minW?: number;
+    minH?: number;
+  };
+  minimized?: boolean;
+  maximized?: boolean;
+}
+```
+
+## Data Flow
+
+### Creating a Window
+
+1. User clicks "New" → selects window type
+2. MenuBar calls `addWindow(type, title, config)`
+3. WindowContext generates unique ID and layout
+4. Window added to `windows` array
+5. WorkspaceGrid receives update via context
+6. react-grid-layout renders new window
+7. WindowFrame wraps content with controls
+
+### Dragging/Resizing
+
+1. User drags window by title bar (`.window-header`)
+2. react-grid-layout emits layout change
+3. `updateLayout()` called with new positions
+4. WindowContext updates all window layouts
+5. Component re-renders with new positions
+
+### Saving Workspace
+
+1. User clicks "Workspaces" → "Save"
+2. `saveWorkspace(name)` captures current state
+3. Workspace object created with all windows
+4. Saved to localStorage and context state
+5. Available in menu for reload
+
+## Key Features
+
+### Responsive Grid
+- Uses `react-grid-layout` for drag/drop
+- 12-column grid system
+- 80px row height
+- Debounced resize handler (100ms)
+- Dynamic width calculation based on container
+
+### Window Controls
+- **Minimize** - Collapse window (future: show in taskbar)
+- **Maximize** - Fullscreen mode with fixed positioning
+- **Close** - Remove window from workspace
+- Draggable via title bar
+- Resizable via bottom-right handle
+
+### Custom Columns (Scanner)
+- Show/hide any column with checkboxes
+- Instant application of changes
+- Column configurations:
+  - Symbol, Price, Change, Change %, Volume
+  - Market Cap, Average Volume (hidden by default)
+- Format options: currency, percent, volume, number
+- Color coding for positive/negative values
+
+### News Integration
+- FMP stock_news API endpoint
+- Auto-refresh every 60 seconds
+- Clickable headlines open in new tab
+- Display: title, snippet, source, timestamp
+- Configurable max items per window
+
+## MCP Integration
+
+The workspace system is designed to support MCP agents:
+- Each window type can be controlled programmatically
+- Window configs are JSON-serializable
+- Agents can create/modify/close windows
+- Workspace layouts can be generated by AI
+
+**Future MCP Use Cases:**
+- AI-generated scanner presets
+- Auto-layout based on strategy
+- Pattern recognition triggers window creation
+- News sentiment analysis windows
+
+## Testing & Validation
+
+### Manual Testing Completed
+1. ✅ Create multiple scanner windows
+2. ✅ Drag windows to different positions
+3. ✅ Resize windows (min/max constraints work)
+4. ✅ Minimize/maximize/close controls
+5. ✅ Column customization persists per window
+6. ✅ News window loads and refreshes
+7. ✅ Alert window displays notifications
+8. ✅ Save workspace to localStorage
+9. ✅ Load saved workspace successfully
+10. ✅ Responsive: windows adjust on browser resize
+
+### Edge Cases Handled
+- Empty workspace shows welcome screen
+- Duplicate window IDs prevented
+- Grid prevents window overlap collisions
+- Minimum window sizes enforced
+- Layout persists across refreshes (if saved)
+
+## Performance Optimizations
+
+1. **Debounced Resize** - 100ms delay on window resize events
+2. **Memoized Layouts** - Layout array only recalculated when windows change
+3. **React Query Caching** - Data fetched once, shared across windows
+4. **Lazy Loading** - Window content only renders when visible
+5. **CSS Transitions** - Hardware-accelerated animations
+
+## Responsive Design
+
+**Desktop (1920x1080):**
+- 12-column grid
+- 80px row height
+- Multiple windows side-by-side
+
+**Laptop (1366x768):**
+- Same grid, tighter spacing
+- Windows stack more vertically
+
+**Tablet/Mobile (Future):**
+- Reduce to single-column layout
+- Disable drag-and-drop
+- Stack windows vertically
+
+## Future Improvements
+
+### Workspace Enhancements
+- **Taskbar** - Minimized windows shown in bottom bar
+- **Window Snapping** - Snap to edges/grid
+- **Keyboard Shortcuts** - Quick actions (Ctrl+N for new, etc.)
+- **Window Templates** - Pre-configured window sets
+- **Multi-Monitor** - Detect and utilize multiple screens
+
+### Scanner Improvements
+- **Sorting** - Click column headers to sort
+- **Column Reordering** - Drag columns to reposition
+- **Custom Columns** - User-defined calculated columns
+- **Export Data** - CSV/Excel export of filtered results
+- **Historical Data** - Time-based scanners (e.g., "Gainers last hour")
+
+### Additional Window Types
+- **Chart Window** - TradingView-style charts
+- **Watchlist Window** - Custom stock lists
+- **Single Stock Window** - Detailed stock view
+- **Heatmap Window** - Sector/market heatmap
+- **Portfolio Window** - Track positions
+
+### Cloud Sync
+- User accounts
+- Cloud-saved workspaces
+- Cross-device sync
+- Shared workspace templates
+
+## Breaking Changes from v0.2
+
+- Complete UI overhaul - old dashboard removed
+- Filter panel integrated into scanner windows
+- Settings page still accessible from menu
+- Alert notifications still work (window optional)
+
+## Migration Guide
+
+**For Users:**
+1. Open new version - see workspace interface
+2. Click "New" to create scanner windows
+3. Settings moved to menu bar
+4. Filters now per-scanner window
+
+**For Developers:**
+- Main page (`app/page.tsx`) completely replaced
+- New context: `WindowContext`
+- Old dashboard components preserved in git history
+- Filter system still works, now scoped to windows
+
+## Files Modified
+
+**Created:**
+- `context/WindowContext.tsx`
+- `components/WorkspaceGrid.tsx`
+- `components/WindowFrame.tsx`
+- `components/MenuBar.tsx`
+- `components/windows/ScannerWindow.tsx`
+- `components/windows/NewsWindow.tsx`
+- `components/windows/AlertsWindow.tsx`
+- `types/windows.ts`
+
+**Modified:**
+- `app/page.tsx` - Complete rewrite
+- `app/layout.tsx` - Added WindowProvider
+- `app/globals.css` - Added grid CSS
+- `package.json` - Added react-grid-layout, @dnd-kit
+
+## Related Documentation
+- [Alert System](./alert_system.md)
+- [Filtering System](./filtering_system.md)
+- [Settings Page](./settings_page.md)
+- [Project Setup](/docs/claude/setup/01_project_setup.md)

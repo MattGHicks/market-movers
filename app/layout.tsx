@@ -5,6 +5,7 @@ import { QueryProvider } from "@/context/QueryProvider";
 import { FilterProvider } from "@/context/FilterContext";
 import { AlertProvider } from "@/context/AlertContext";
 import { WindowProvider } from "@/context/WindowContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 import { AlertNotifications } from "@/components/AlertNotifications";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -22,16 +23,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <QueryProvider>
-          <FilterProvider>
-            <AlertProvider>
-              <WindowProvider>
-                <AlertNotifications />
-                {children}
-              </WindowProvider>
-            </AlertProvider>
-          </FilterProvider>
-        </QueryProvider>
+        <ThemeProvider>
+          <QueryProvider>
+            <FilterProvider>
+              <AlertProvider>
+                <WindowProvider>
+                  <AlertNotifications />
+                  {children}
+                </WindowProvider>
+              </AlertProvider>
+            </FilterProvider>
+          </QueryProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

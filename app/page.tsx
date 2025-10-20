@@ -37,43 +37,67 @@ export default function Home() {
   }, []); // Only run once on mount
 
   return (
-    <div className="h-screen flex flex-col bg-slate-950">
+    <div className="h-screen flex flex-col" style={{ background: 'var(--bg-primary)' }}>
       <MenuBar />
       <div className="flex-1 overflow-hidden">
         {windows.length === 0 ? (
           <div className="h-full flex items-center justify-center">
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-white mb-4">
+              <h2 className="text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
                 Welcome to Market Movers Pro
               </h2>
-              <p className="text-slate-400 mb-6">
+              <p className="mb-6" style={{ color: 'var(--text-secondary)' }}>
                 Click &quot;New&quot; in the menu bar to add your first scanner window
               </p>
               <div className="flex items-center justify-center gap-4">
                 <button
-                  onClick={() => addWindow('scanner', 'Top Gainers', {
-                    type: 'scanner',
-                    config: {
-                      name: 'Top Gainers',
-                      filters: {},
-                      columns: DEFAULT_SCANNER_COLUMNS,
-                      dataType: 'gainers',
-                      colorCoded: true,
-                      maxRows: 20,
-                    },
-                  })}
-                  className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                  onClick={() =>
+                    addWindow('scanner', 'Top Gainers', {
+                      type: 'scanner',
+                      config: {
+                        name: 'Top Gainers',
+                        filters: {},
+                        columns: DEFAULT_SCANNER_COLUMNS,
+                        dataType: 'gainers',
+                        colorCoded: true,
+                        maxRows: 20,
+                      },
+                    })
+                  }
+                  className="px-6 py-3 rounded-lg transition-colors"
+                  style={{
+                    background: 'var(--green-base)',
+                    color: 'white',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'var(--green-dark)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'var(--green-base)';
+                  }}
                 >
                   📈 Add Top Gainers
                 </button>
                 <button
-                  onClick={() => addWindow('news', 'Market News', {
-                    type: 'news',
-                    config: {
-                      maxItems: 15,
-                    },
-                  })}
-                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                  onClick={() =>
+                    addWindow('news', 'Market News', {
+                      type: 'news',
+                      config: {
+                        maxItems: 15,
+                      },
+                    })
+                  }
+                  className="px-6 py-3 rounded-lg transition-colors"
+                  style={{
+                    background: 'var(--accent-primary)',
+                    color: 'white',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'var(--accent-hover)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'var(--accent-primary)';
+                  }}
                 >
                   📰 Add News Feed
                 </button>

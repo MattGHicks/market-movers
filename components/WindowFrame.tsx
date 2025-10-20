@@ -11,7 +11,13 @@ interface WindowFrameProps {
 }
 
 export function WindowFrame({ window }: WindowFrameProps) {
-  const { removeWindow, minimizeWindow, maximizeWindow, restoreWindow } = useWindows();
+  const { removeWindow, minimizeWindow, maximizeWindow, restoreWindow, focusWindow } = useWindows();
+
+  const handleClick = () => {
+    if (!window.focused) {
+      focusWindow(window.id);
+    }
+  };
 
   const renderContent = () => {
     if (window.minimized) return null;
@@ -29,52 +35,53 @@ export function WindowFrame({ window }: WindowFrameProps) {
   };
 
   return (
-    <div className={`h-full flex flex-col bg-slate-900 border border-slate-700 rounded-lg overflow-hidden ${window.maximized ? 'fixed inset-4 z-50' : ''}`}>
+    <div
+      className={`h-full flex flex-col rounded-lg overflow-hidden ${
+        window.maximized ? 'fixed inset-4 z-50' : ''
+      } ${window.focused ? 'window-focused' : ''}`}
+      style={{
+        background: 'var(--bg-secondary)',
+        border: window.focused
+          ? '2px solid var(--accent-primary)'
+          : '1px solid var(--border-primary)',
+        boxShadow: window.focused
+          ? '0 0 0 4px rgba(59, 130, 246, 0.1), var(--shadow-lg)'
+          : 'var(--shadow-md)',
+        zIndex: window.zIndex || 1,
+      }}
+      onClick={handleClick}
+      role="article"
+      aria-label={`${window.title} window`}
+      tabIndex={0}
+    >
       {/* Window Header */}
-      <div className="window-header flex items-center justify-between px-3 py-2 bg-slate-800 border-b border-slate-700 cursor-move">
-        <h3 className="text-sm font-semibold text-white">{window.title}</h3>
+      <div
+        className="window-header flex items-center justify-between px-3 py-2 cursor-move"
+        style={{
+          background: 'var(--bg-tertiary)',
+          borderBottom: '1px solid var(--border-primary)',
+        }}
+      >
+        <h3 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+          {window.title}
+        </h3>
         <div className="flex items-center gap-1">
-          {/* Minimize */}
-          <button
-            onClick={() => minimizeWindow(window.id)}
-            className="p-1 hover:bg-slate-700 rounded transition-colors"
-            title="Minimize"
-          >
-            <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-            </svg>
-          </button>
-
-          {/* Maximize/Restore */}
-          {window.maximized ? (
-            <button
-              onClick={() => restoreWindow(window.id)}
-              className="p-1 hover:bg-slate-700 rounded transition-colors"
-              title="Restore"
-            >
-              <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
-              </svg>
-            </button>
-          ) : (
-            <button
-              onClick={() => maximizeWindow(window.id)}
-              className="p-1 hover:bg-slate-700 rounded transition-colors"
-              title="Maximize"
-            >
-              <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5" />
-              </svg>
-            </button>
-          )}
-
           {/* Close */}
           <button
             onClick={() => removeWindow(window.id)}
-            className="p-1 hover:bg-red-600 rounded transition-colors"
+            className="p-1 rounded transition-colors"
+            style={{ color: 'var(--text-secondary)' }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'var(--red-base)';
+              e.currentTarget.style.color = 'white';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = 'var(--text-secondary)';
+            }}
             title="Close"
           >
-            <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
