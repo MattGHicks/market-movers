@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/context/QueryProvider";
+import { FilterProvider } from "@/context/FilterContext";
+import { AlertProvider } from "@/context/AlertContext";
+import { AlertNotifications } from "@/components/AlertNotifications";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +21,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          <FilterProvider>
+            <AlertProvider>
+              <AlertNotifications />
+              {children}
+            </AlertProvider>
+          </FilterProvider>
+        </QueryProvider>
       </body>
     </html>
   );
