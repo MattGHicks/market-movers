@@ -4,13 +4,14 @@ import "./globals.css";
 import { QueryProvider } from "@/context/QueryProvider";
 import { FilterProvider } from "@/context/FilterContext";
 import { AlertProvider } from "@/context/AlertContext";
+import { WindowProvider } from "@/context/WindowContext";
 import { AlertNotifications } from "@/components/AlertNotifications";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Market Movers - Real-Time Stock Momentum Scanner",
-  description: "Track market momentum and identify winning stocks in real-time",
+  title: "Market Movers Pro - Real-Time Stock Trading Platform",
+  description: "Professional trading platform with customizable scanners and real-time market data",
 };
 
 export default function RootLayout({
@@ -24,8 +25,10 @@ export default function RootLayout({
         <QueryProvider>
           <FilterProvider>
             <AlertProvider>
-              <AlertNotifications />
-              {children}
+              <WindowProvider>
+                <AlertNotifications />
+                {children}
+              </WindowProvider>
             </AlertProvider>
           </FilterProvider>
         </QueryProvider>
