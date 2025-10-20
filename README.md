@@ -87,7 +87,7 @@ A professional real-time stock trading platform inspired by Trade-Ideas, built w
 
 1. **Clone the repository**
    ```bash
-   git clone <your-repo-url>
+   git clone https://github.com/MattGHicks/market-movers.git
    cd market-movers
    ```
 
@@ -395,7 +395,7 @@ MIT License - feel free to use this project for learning and development.
 
 ## 📞 Support
 
-For questions or issues, please open an issue on GitHub.
+For questions or issues, please open an issue on [GitHub](https://github.com/MattGHicks/market-movers/issues).
 
 ---
 
