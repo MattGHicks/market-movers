@@ -5,13 +5,16 @@ import { ScanFilter } from './index';
  * Window Types - Different window types available
  */
 export type WindowType =
-  | 'scanner'      // Stock scanner with filters
-  | 'alerts'       // Alert notifications
-  | 'news'         // News feed
-  | 'chart'        // Stock chart
-  | 'single-stock' // Single stock details
-  | 'watchlist'    // Watchlist
-  | 'stock-quote'; // Stock quote with news and metrics
+  | 'scanner'         // Stock scanner with filters
+  | 'alerts'          // Alert notifications
+  | 'news'            // News feed
+  | 'chart'           // Stock chart
+  | 'single-stock'    // Single stock details
+  | 'watchlist'       // Watchlist
+  | 'stock-quote'     // Stock quote with news and metrics
+  | 'halts'           // Trading halts
+  | 'volume-leaders'  // Volume leaders scanner
+  | 'five-pillars';   // Ross's 5 Pillars scanner
 
 /**
  * Column Configuration for tables
@@ -52,8 +55,8 @@ export interface NewsConfig {
  * Chart Configuration
  */
 export interface ChartConfig {
-  symbol: string;
-  interval: '1min' | '5min' | '15min' | '1hour' | '1day';
+  symbol?: string;
+  interval?: '1min' | '5min' | '15min' | '1hour' | '1day';
   indicators?: string[];
 }
 
@@ -74,7 +77,10 @@ export type WindowConfig =
   | { type: 'chart'; config: ChartConfig }
   | { type: 'single-stock'; config: { symbol: string } }
   | { type: 'watchlist'; config: { symbols: string[] } }
-  | { type: 'stock-quote'; config: StockQuoteConfig };
+  | { type: 'stock-quote'; config: StockQuoteConfig }
+  | { type: 'halts'; config: {} }
+  | { type: 'volume-leaders'; config: {} }
+  | { type: 'five-pillars'; config: {} };
 
 /**
  * Window Instance - Represents a single window in the workspace

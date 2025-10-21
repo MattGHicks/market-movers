@@ -53,6 +53,41 @@ export function MenuBar() {
     setShowNewMenu(false);
   };
 
+  const createChartWindow = () => {
+    addWindow('chart', 'Chart', {
+      type: 'chart',
+      config: {
+        symbol: 'AAPL',
+        interval: '5min',
+      },
+    });
+    setShowNewMenu(false);
+  };
+
+  const createHaltsWindow = () => {
+    addWindow('halts', 'Trading Halts', {
+      type: 'halts',
+      config: {},
+    });
+    setShowNewMenu(false);
+  };
+
+  const createVolumeLeadersWindow = () => {
+    addWindow('volume-leaders', 'Volume Leaders', {
+      type: 'volume-leaders',
+      config: {},
+    });
+    setShowNewMenu(false);
+  };
+
+  const createFivePillarsWindow = () => {
+    addWindow('five-pillars', 'Ross\'s 5 Pillars', {
+      type: 'five-pillars',
+      config: {},
+    });
+    setShowNewMenu(false);
+  };
+
   return (
     <div style={{
       background: 'var(--bg-secondary)',
@@ -136,6 +171,35 @@ export function MenuBar() {
                 className="w-full px-4 py-2 text-left text-sm transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
               >
                 📊 Stock Quote Window
+              </button>
+              <div style={{ borderTop: '1px solid var(--border-primary)' }} className="my-1"></div>
+              <button
+                onClick={createChartWindow}
+                style={{ color: 'var(--text-secondary)' }}
+                className="w-full px-4 py-2 text-left text-sm transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+              >
+                📈 Chart Window
+              </button>
+              <button
+                onClick={createHaltsWindow}
+                style={{ color: 'var(--text-secondary)' }}
+                className="w-full px-4 py-2 text-left text-sm transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+              >
+                ⏸️ Halts Window
+              </button>
+              <button
+                onClick={createVolumeLeadersWindow}
+                style={{ color: 'var(--text-secondary)' }}
+                className="w-full px-4 py-2 text-left text-sm transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+              >
+                📊 Volume Leaders
+              </button>
+              <button
+                onClick={createFivePillarsWindow}
+                style={{ color: 'var(--text-secondary)' }}
+                className="w-full px-4 py-2 text-left text-sm transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+              >
+                🏛️ Ross's 5 Pillars Scanner
               </button>
             </div>
           )}

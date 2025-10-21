@@ -6,6 +6,10 @@ import { ScannerWindow } from './windows/ScannerWindow';
 import { NewsWindow } from './windows/NewsWindow';
 import { AlertsWindow } from './windows/AlertsWindow';
 import { StockQuoteWindow } from './windows/StockQuoteWindow';
+import { ChartWindow } from './windows/ChartWindow';
+import { HaltsWindow } from './windows/HaltsWindow';
+import { VolumeLeadersWindow } from './windows/VolumeLeadersWindow';
+import { FivePillarsWindow } from './windows/FivePillarsWindow';
 
 interface WindowFrameProps {
   window: WindowInstance;
@@ -32,6 +36,14 @@ export function WindowFrame({ window }: WindowFrameProps) {
         return <AlertsWindow />;
       case 'stock-quote':
         return <StockQuoteWindow config={window.config.type === 'stock-quote' ? window.config.config : undefined} />;
+      case 'chart':
+        return <ChartWindow config={window.config.type === 'chart' ? window.config.config : undefined} />;
+      case 'halts':
+        return <HaltsWindow />;
+      case 'volume-leaders':
+        return <VolumeLeadersWindow />;
+      case 'five-pillars':
+        return <FivePillarsWindow />;
       default:
         return <div className="p-4 text-slate-400">Window type not implemented yet</div>;
     }
