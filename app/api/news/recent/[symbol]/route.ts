@@ -6,10 +6,10 @@ interface NewsItem {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ symbol: string }> }
+  context: { params: Promise<{ symbol: string }> }
 ) {
   try {
-    const { symbol } = await params;
+    const { symbol } = await context.params;
     const apiKey = process.env.NEXT_PUBLIC_FMP_API_KEY;
 
     const url = `https://financialmodelingprep.com/api/v3/stock_news?tickers=${symbol}&limit=5&apikey=${apiKey}`;
