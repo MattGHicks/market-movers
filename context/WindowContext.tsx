@@ -28,7 +28,7 @@ export function WindowProvider({ children }: { children: ReactNode }) {
   const GRID_ROWS = 9;
 
   const [windows, setWindows] = useState<WindowInstance[]>([
-    // Top row: Alerts (left) + Top Losers (center) + Stock Quote (right)
+    // Top row: Alerts (left) + Chart (center) + Stock Quote (right)
     {
       id: 'default-alerts',
       title: 'Alerts',
@@ -42,27 +42,17 @@ export function WindowProvider({ children }: { children: ReactNode }) {
       focused: false,
     },
     {
-      id: 'default-losers-1',
-      title: 'Top Losers',
-      type: 'scanner',
+      id: 'default-chart',
+      title: 'Chart',
+      type: 'chart',
       config: {
-        type: 'scanner',
+        type: 'chart',
         config: {
-          name: 'Top Losers',
-          filters: {},
-          columns: [
-            { id: 'symbol', label: 'Symbol', key: 'symbol', visible: true, width: 80, sortable: true },
-            { id: 'price', label: 'Price ($)', key: 'price', visible: true, width: 80, format: 'currency', sortable: true },
-            { id: 'change', label: 'Change ($)', key: 'change', visible: true, width: 80, format: 'currency', colorCode: true, sortable: true },
-            { id: 'changesPercentage', label: 'Chg %', key: 'changesPercentage', visible: true, width: 80, format: 'percent', colorCode: true, sortable: true },
-            { id: 'volume', label: 'Volume', key: 'volume', visible: true, width: 100, format: 'volume', sortable: true },
-          ],
-          dataType: 'losers',
-          colorCoded: true,
-          maxRows: 50,
+          symbol: 'AAPL',
+          interval: '5min',
         },
       },
-      layout: { x: 3, y: 0, w: 7, h: 4, minW: 4, minH: 2 },
+      layout: { x: 3, y: 0, w: 7, h: 4, minW: 4, minH: 3 },
       zIndex: 1,
       focused: false,
     },
@@ -80,7 +70,43 @@ export function WindowProvider({ children }: { children: ReactNode }) {
       zIndex: 1,
       focused: false,
     },
-    // Bottom row: Top Gainers + Top Losers + Top Losers (small) + Most Active
+    // Bottom row: Trading Halts + Volume Leaders + Ross's 5 Pillars + Top Gainers
+    {
+      id: 'default-halts',
+      title: 'Trading Halts',
+      type: 'halts',
+      config: {
+        type: 'halts',
+        config: {},
+      },
+      layout: { x: 0, y: 4, w: 3, h: 5, minW: 2, minH: 2 },
+      zIndex: 1,
+      focused: false,
+    },
+    {
+      id: 'default-volume-leaders',
+      title: 'Volume Leaders',
+      type: 'volume-leaders',
+      config: {
+        type: 'volume-leaders',
+        config: {},
+      },
+      layout: { x: 3, y: 4, w: 4, h: 5, minW: 3, minH: 2 },
+      zIndex: 1,
+      focused: false,
+    },
+    {
+      id: 'default-five-pillars',
+      title: 'Ross\'s 5 Pillars',
+      type: 'five-pillars',
+      config: {
+        type: 'five-pillars',
+        config: {},
+      },
+      layout: { x: 7, y: 4, w: 4, h: 5, minW: 3, minH: 2 },
+      zIndex: 1,
+      focused: false,
+    },
     {
       id: 'default-gainers',
       title: 'Top Gainers',
@@ -98,81 +124,6 @@ export function WindowProvider({ children }: { children: ReactNode }) {
             { id: 'volume', label: 'Volume', key: 'volume', visible: true, width: 100, format: 'volume', sortable: true },
           ],
           dataType: 'gainers',
-          colorCoded: true,
-          maxRows: 50,
-        },
-      },
-      layout: { x: 0, y: 4, w: 4, h: 5, minW: 3, minH: 2 },
-      zIndex: 1,
-      focused: false,
-    },
-    {
-      id: 'default-losers-2',
-      title: 'Top Losers',
-      type: 'scanner',
-      config: {
-        type: 'scanner',
-        config: {
-          name: 'Top Losers',
-          filters: {},
-          columns: [
-            { id: 'symbol', label: 'Symbol', key: 'symbol', visible: true, width: 80, sortable: true },
-            { id: 'price', label: 'Price ($)', key: 'price', visible: true, width: 80, format: 'currency', sortable: true },
-            { id: 'change', label: 'Change ($)', key: 'change', visible: true, width: 80, format: 'currency', colorCode: true, sortable: true },
-            { id: 'changesPercentage', label: 'Chg %', key: 'changesPercentage', visible: true, width: 80, format: 'percent', colorCode: true, sortable: true },
-            { id: 'volume', label: 'Volume', key: 'volume', visible: true, width: 100, format: 'volume', sortable: true },
-          ],
-          dataType: 'losers',
-          colorCoded: true,
-          maxRows: 50,
-        },
-      },
-      layout: { x: 4, y: 4, w: 4, h: 5, minW: 3, minH: 2 },
-      zIndex: 1,
-      focused: false,
-    },
-    {
-      id: 'default-losers-3',
-      title: 'Top Losers',
-      type: 'scanner',
-      config: {
-        type: 'scanner',
-        config: {
-          name: 'Top Losers',
-          filters: {},
-          columns: [
-            { id: 'symbol', label: 'Symbol', key: 'symbol', visible: true, width: 80, sortable: true },
-            { id: 'price', label: 'Price ($)', key: 'price', visible: true, width: 80, format: 'currency', sortable: true },
-            { id: 'change', label: 'Change ($)', key: 'change', visible: true, width: 80, format: 'currency', colorCode: true, sortable: true },
-            { id: 'changesPercentage', label: 'Chg %', key: 'changesPercentage', visible: true, width: 80, format: 'percent', colorCode: true, sortable: true },
-            { id: 'volume', label: 'Volume', key: 'volume', visible: true, width: 100, format: 'volume', sortable: true },
-          ],
-          dataType: 'losers',
-          colorCoded: true,
-          maxRows: 50,
-        },
-      },
-      layout: { x: 8, y: 4, w: 3, h: 5, minW: 2, minH: 2 },
-      zIndex: 1,
-      focused: false,
-    },
-    {
-      id: 'default-actives',
-      title: 'Most Active',
-      type: 'scanner',
-      config: {
-        type: 'scanner',
-        config: {
-          name: 'Most Active',
-          filters: {},
-          columns: [
-            { id: 'symbol', label: 'Symbol', key: 'symbol', visible: true, width: 80, sortable: true },
-            { id: 'price', label: 'Price ($)', key: 'price', visible: true, width: 80, format: 'currency', sortable: true },
-            { id: 'change', label: 'Change ($)', key: 'change', visible: true, width: 80, format: 'currency', colorCode: true, sortable: true },
-            { id: 'changesPercentage', label: 'Chg %', key: 'changesPercentage', visible: true, width: 80, format: 'percent', colorCode: true, sortable: true },
-            { id: 'volume', label: 'Volume', key: 'volume', visible: true, width: 100, format: 'volume', sortable: true },
-          ],
-          dataType: 'actives',
           colorCoded: true,
           maxRows: 50,
         },
