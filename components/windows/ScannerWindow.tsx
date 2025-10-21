@@ -17,8 +17,6 @@ interface ScannerWindowProps {
 }
 
 export function ScannerWindow({ config }: ScannerWindowProps) {
-  const [refreshRate] = useState<number>(3000); // Fixed 3s auto-refresh
-  const [autoRefresh] = useState(true);
   const [tickersWithRecentNews, setTickersWithRecentNews] = useState<Set<string>>(new Set());
   const [tickersWithDayOldNews, setTickersWithDayOldNews] = useState<Set<string>>(new Set());
 
@@ -30,25 +28,22 @@ export function ScannerWindow({ config }: ScannerWindowProps) {
     config?.columns || DEFAULT_SCANNER_COLUMNS
   );
 
-  // Fetch data based on dataType with configurable refresh
+  // Fetch data based on dataType
+  // React Query automatically deduplicates and shares data across all scanner windows
   const dataType = config?.dataType || 'gainers';
-  const { data: gainersData, refetch: refetchGainers } = useTopGainers(autoRefresh ? refreshRate : undefined);
-  const { data: losersData, refetch: refetchLosers } = useTopLosers(autoRefresh ? refreshRate : undefined);
-  const { data: activesData, refetch: refetchActives } = useMostActive(autoRefresh ? refreshRate : undefined);
+  const { data: gainersData } = useTopGainers();
+  const { data: losersData } = useTopLosers();
+  const { data: activesData } = useMostActive();
 
   // Select appropriate data source
   let stocks: MarketMover[] = [];
-  let refetch = refetchGainers;
 
   if (dataType === 'gainers' && gainersData?.gainers) {
     stocks = gainersData.gainers;
-    refetch = refetchGainers;
   } else if (dataType === 'losers' && losersData?.losers) {
     stocks = losersData.losers;
-    refetch = refetchLosers;
   } else if (dataType === 'actives' && activesData?.active) {
     stocks = activesData.active;
-    refetch = refetchActives;
   }
 
   // Apply filters if configured

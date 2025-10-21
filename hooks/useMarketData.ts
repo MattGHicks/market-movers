@@ -10,8 +10,10 @@ interface MarketDataResponse {
 
 /**
  * Fetch top gainers
+ * Note: Refetch interval is controlled globally by QueryProvider (3 seconds)
+ * React Query automatically deduplicates requests with the same query key
  */
-export function useTopGainers(refetchInterval?: number) {
+export function useTopGainers() {
   return useQuery<MarketDataResponse>({
     queryKey: ['market', 'gainers'],
     queryFn: async () => {
@@ -21,14 +23,15 @@ export function useTopGainers(refetchInterval?: number) {
       }
       return response.json();
     },
-    refetchInterval,
   });
 }
 
 /**
  * Fetch top losers
+ * Note: Refetch interval is controlled globally by QueryProvider (3 seconds)
+ * React Query automatically deduplicates requests with the same query key
  */
-export function useTopLosers(refetchInterval?: number) {
+export function useTopLosers() {
   return useQuery<MarketDataResponse>({
     queryKey: ['market', 'losers'],
     queryFn: async () => {
@@ -38,14 +41,15 @@ export function useTopLosers(refetchInterval?: number) {
       }
       return response.json();
     },
-    refetchInterval,
   });
 }
 
 /**
  * Fetch most active stocks
+ * Note: Refetch interval is controlled globally by QueryProvider (3 seconds)
+ * React Query automatically deduplicates requests with the same query key
  */
-export function useMostActive(refetchInterval?: number) {
+export function useMostActive() {
   return useQuery<MarketDataResponse>({
     queryKey: ['market', 'actives'],
     queryFn: async () => {
@@ -55,6 +59,5 @@ export function useMostActive(refetchInterval?: number) {
       }
       return response.json();
     },
-    refetchInterval,
   });
 }
