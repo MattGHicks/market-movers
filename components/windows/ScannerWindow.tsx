@@ -347,9 +347,11 @@ export function ScannerWindow({ config }: ScannerWindowProps) {
                       onClick={isSymbolColumn ? () => setSelectedSymbol(stock.symbol) : undefined}
                       style={isSymbolColumn ? { transition: 'background 150ms ease' } : undefined}
                     >
-                      {formatValue(stock[col.key as keyof MarketMover], col.format, col.colorCode)}
-                      {isSymbolColumn && hasRecentNews && <span className="ml-1" style={{ filter: 'hue-rotate(0deg)' }}>🔥</span>}
-                      {isSymbolColumn && !hasRecentNews && hasDayOldNews && <span className="ml-1" style={{ filter: 'hue-rotate(200deg)' }}>🔥</span>}
+                      <span className="flex items-center gap-1">
+                        {formatValue(stock[col.key as keyof MarketMover], col.format, col.colorCode)}
+                        {isSymbolColumn && hasRecentNews && <span style={{ filter: 'hue-rotate(0deg)', flexShrink: 0 }}>🔥</span>}
+                        {isSymbolColumn && !hasRecentNews && hasDayOldNews && <span style={{ filter: 'hue-rotate(200deg)', flexShrink: 0 }}>🔥</span>}
+                      </span>
                     </td>
                   );
                 })}

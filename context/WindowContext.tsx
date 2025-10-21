@@ -28,7 +28,59 @@ export function WindowProvider({ children }: { children: ReactNode }) {
   const GRID_ROWS = 9;
 
   const [windows, setWindows] = useState<WindowInstance[]>([
-    // Top row: 3 scanners (~5 columns each, 4 rows)
+    // Top row: Alerts (left) + Top Losers (center) + Stock Quote (right)
+    {
+      id: 'default-alerts',
+      title: 'Alerts',
+      type: 'alerts',
+      config: {
+        type: 'alerts',
+        config: {},
+      },
+      layout: { x: 0, y: 0, w: 3, h: 4, minW: 2, minH: 2 },
+      zIndex: 1,
+      focused: false,
+    },
+    {
+      id: 'default-losers-1',
+      title: 'Top Losers',
+      type: 'scanner',
+      config: {
+        type: 'scanner',
+        config: {
+          name: 'Top Losers',
+          filters: {},
+          columns: [
+            { id: 'symbol', label: 'Symbol', key: 'symbol', visible: true, width: 80, sortable: true },
+            { id: 'price', label: 'Price ($)', key: 'price', visible: true, width: 80, format: 'currency', sortable: true },
+            { id: 'change', label: 'Change ($)', key: 'change', visible: true, width: 80, format: 'currency', colorCode: true, sortable: true },
+            { id: 'changesPercentage', label: 'Chg %', key: 'changesPercentage', visible: true, width: 80, format: 'percent', colorCode: true, sortable: true },
+            { id: 'volume', label: 'Volume', key: 'volume', visible: true, width: 100, format: 'volume', sortable: true },
+          ],
+          dataType: 'losers',
+          colorCoded: true,
+          maxRows: 50,
+        },
+      },
+      layout: { x: 3, y: 0, w: 7, h: 4, minW: 4, minH: 2 },
+      zIndex: 1,
+      focused: false,
+    },
+    {
+      id: 'default-stock-quote',
+      title: 'Stock Quote',
+      type: 'stock-quote',
+      config: {
+        type: 'stock-quote',
+        config: {
+          symbol: 'AAPL',
+        },
+      },
+      layout: { x: 10, y: 0, w: 6, h: 4, minW: 4, minH: 3 },
+      zIndex: 1,
+      focused: false,
+    },
+    // Bottom row: Top Gainers + Top Losers + Top Losers (small) + Most Active
     {
       id: 'default-gainers',
       title: 'Top Gainers',
@@ -50,12 +102,12 @@ export function WindowProvider({ children }: { children: ReactNode }) {
           maxRows: 50,
         },
       },
-      layout: { x: 0, y: 0, w: 5, h: 4, minW: 3, minH: 2 },
+      layout: { x: 0, y: 4, w: 4, h: 5, minW: 3, minH: 2 },
       zIndex: 1,
       focused: false,
     },
     {
-      id: 'default-losers',
+      id: 'default-losers-2',
       title: 'Top Losers',
       type: 'scanner',
       config: {
@@ -75,7 +127,32 @@ export function WindowProvider({ children }: { children: ReactNode }) {
           maxRows: 50,
         },
       },
-      layout: { x: 5, y: 0, w: 6, h: 4, minW: 3, minH: 2 },
+      layout: { x: 4, y: 4, w: 4, h: 5, minW: 3, minH: 2 },
+      zIndex: 1,
+      focused: false,
+    },
+    {
+      id: 'default-losers-3',
+      title: 'Top Losers',
+      type: 'scanner',
+      config: {
+        type: 'scanner',
+        config: {
+          name: 'Top Losers',
+          filters: {},
+          columns: [
+            { id: 'symbol', label: 'Symbol', key: 'symbol', visible: true, width: 80, sortable: true },
+            { id: 'price', label: 'Price ($)', key: 'price', visible: true, width: 80, format: 'currency', sortable: true },
+            { id: 'change', label: 'Change ($)', key: 'change', visible: true, width: 80, format: 'currency', colorCode: true, sortable: true },
+            { id: 'changesPercentage', label: 'Chg %', key: 'changesPercentage', visible: true, width: 80, format: 'percent', colorCode: true, sortable: true },
+            { id: 'volume', label: 'Volume', key: 'volume', visible: true, width: 100, format: 'volume', sortable: true },
+          ],
+          dataType: 'losers',
+          colorCoded: true,
+          maxRows: 50,
+        },
+      },
+      layout: { x: 8, y: 4, w: 3, h: 5, minW: 2, minH: 2 },
       zIndex: 1,
       focused: false,
     },
@@ -100,34 +177,7 @@ export function WindowProvider({ children }: { children: ReactNode }) {
           maxRows: 50,
         },
       },
-      layout: { x: 11, y: 0, w: 5, h: 4, minW: 3, minH: 2 },
-      zIndex: 1,
-      focused: false,
-    },
-    // Bottom row: Stock Quote (8 cols) + Alerts (8 cols), 5 rows
-    {
-      id: 'default-stock-quote',
-      title: 'Stock Quote',
-      type: 'stock-quote',
-      config: {
-        type: 'stock-quote',
-        config: {
-          symbol: 'AAPL',
-        },
-      },
-      layout: { x: 0, y: 4, w: 8, h: 5, minW: 3, minH: 2 },
-      zIndex: 1,
-      focused: false,
-    },
-    {
-      id: 'default-alerts',
-      title: 'Alerts',
-      type: 'alerts',
-      config: {
-        type: 'alerts',
-        config: {},
-      },
-      layout: { x: 8, y: 4, w: 8, h: 5, minW: 3, minH: 2 },
+      layout: { x: 11, y: 4, w: 5, h: 5, minW: 3, minH: 2 },
       zIndex: 1,
       focused: false,
     },
