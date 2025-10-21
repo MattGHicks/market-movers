@@ -11,7 +11,7 @@ interface MarketDataResponse {
 /**
  * Fetch top gainers
  */
-export function useTopGainers() {
+export function useTopGainers(refetchInterval?: number) {
   return useQuery<MarketDataResponse>({
     queryKey: ['market', 'gainers'],
     queryFn: async () => {
@@ -21,13 +21,14 @@ export function useTopGainers() {
       }
       return response.json();
     },
+    refetchInterval,
   });
 }
 
 /**
  * Fetch top losers
  */
-export function useTopLosers() {
+export function useTopLosers(refetchInterval?: number) {
   return useQuery<MarketDataResponse>({
     queryKey: ['market', 'losers'],
     queryFn: async () => {
@@ -37,13 +38,14 @@ export function useTopLosers() {
       }
       return response.json();
     },
+    refetchInterval,
   });
 }
 
 /**
  * Fetch most active stocks
  */
-export function useMostActive() {
+export function useMostActive(refetchInterval?: number) {
   return useQuery<MarketDataResponse>({
     queryKey: ['market', 'actives'],
     queryFn: async () => {
@@ -53,5 +55,6 @@ export function useMostActive() {
       }
       return response.json();
     },
+    refetchInterval,
   });
 }
