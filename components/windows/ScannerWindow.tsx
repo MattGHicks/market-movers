@@ -23,8 +23,8 @@ export function ScannerWindow({ config }: ScannerWindowProps) {
   // Symbol selection for cross-window sync
   const { setSelectedSymbol } = useSymbolSelection();
 
-  // Use column resize hook
-  const { columns, handleResizeStart } = useColumnResize(
+  // Use column resize and reorder hook
+  const { columns, handleResizeStart, handleColumnDragStart, handleColumnDragOver, handleColumnDrop } = useColumnResize(
     config?.columns || DEFAULT_SCANNER_COLUMNS
   );
 
@@ -63,6 +63,7 @@ export function ScannerWindow({ config }: ScannerWindowProps) {
   const { getFlashClass } = useDataFlash(sortedData);
 
   // Check for recent news for each ticker
+  // Only re-check when symbols change, not on every data refresh
   useEffect(() => {
     const checkRecentNews = async () => {
       if (!sortedData || sortedData.length === 0) return;
@@ -97,7 +98,7 @@ export function ScannerWindow({ config }: ScannerWindowProps) {
     // Re-check every 2 minutes
     const interval = setInterval(checkRecentNews, 120000);
     return () => clearInterval(interval);
-  }, [sortedData]);
+  }, [sortedData?.map(s => s.symbol).join(',')]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const formatValue = (value: any, format?: ColumnConfig['format'], colorCode?: boolean) => {
     if (value === undefined || value === null) return '-';
@@ -143,16 +144,23 @@ export function ScannerWindow({ config }: ScannerWindowProps) {
                 <th
                   key={col.id}
                   className="scanner-header"
+                  draggable
+                  onDragStart={(e) => handleColumnDragStart(e, col.id)}
+                  onDragOver={handleColumnDragOver}
+                  onDrop={(e) => handleColumnDrop(e, col.id)}
                   style={{
                     width: col.width,
                     position: 'relative',
                     cursor: col.sortable !== false ? 'pointer' : 'default',
                   }}
                   onClick={() => col.sortable !== false && handleSort(col.key as string)}
-                  title={col.sortable !== false ? 'Click to sort' : undefined}
+                  title={col.sortable !== false ? 'Click to sort, drag to reorder' : 'Drag to reorder'}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span>{col.label}</span>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <span style={{ cursor: 'grab', opacity: 0.5 }}>⋮⋮</span>
+                      {col.label}
+                    </span>
 
                     {/* Sort indicator */}
                     {col.sortable !== false && sortState.column === col.key && (
