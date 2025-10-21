@@ -120,7 +120,7 @@ export function WindowProvider({ children }: { children: ReactNode }) {
             { id: 'symbol', label: 'Symbol', key: 'symbol', visible: true, width: 80, sortable: true },
             { id: 'price', label: 'Price ($)', key: 'price', visible: true, width: 80, format: 'currency', sortable: true },
             { id: 'change', label: 'Change ($)', key: 'change', visible: true, width: 80, format: 'currency', colorCode: true, sortable: true },
-            { id: 'changesPercentage', label: 'Chg %', key: 'changesPercentage', visible: true, width: 80, format: 'percent', colorCode: true, sortable: true },
+            { id: 'changePercent', label: 'Chg %', key: 'changePercent', visible: true, width: 80, format: 'percent', colorCode: true, sortable: true },
             { id: 'volume', label: 'Volume', key: 'volume', visible: true, width: 100, format: 'volume', sortable: true },
           ],
           dataType: 'gainers',

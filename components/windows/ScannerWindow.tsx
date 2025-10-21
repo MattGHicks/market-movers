@@ -144,8 +144,6 @@ export function ScannerWindow({ config }: ScannerWindowProps) {
                 <th
                   key={col.id}
                   className="scanner-header"
-                  draggable
-                  onDragStart={(e) => handleColumnDragStart(e, col.id)}
                   onDragOver={handleColumnDragOver}
                   onDrop={(e) => handleColumnDrop(e, col.id)}
                   style={{
@@ -154,11 +152,29 @@ export function ScannerWindow({ config }: ScannerWindowProps) {
                     cursor: col.sortable !== false ? 'pointer' : 'default',
                   }}
                   onClick={() => col.sortable !== false && handleSort(col.key as string)}
-                  title={col.sortable !== false ? 'Click to sort, drag to reorder' : 'Drag to reorder'}
+                  title={col.sortable !== false ? 'Click to sort' : undefined}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <span style={{ cursor: 'grab', opacity: 0.5 }}>⋮⋮</span>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+                      {/* Drag handle - separate from clickable area */}
+                      <span
+                        draggable
+                        onDragStart={(e) => {
+                          e.stopPropagation();
+                          handleColumnDragStart(e, col.id);
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        style={{
+                          cursor: 'grab',
+                          opacity: 0.5,
+                          padding: '0 2px',
+                          userSelect: 'none',
+                        }}
+                        onMouseDown={(e) => e.stopPropagation()}
+                        title="Drag to reorder"
+                      >
+                        ⋮⋮
+                      </span>
                       {col.label}
                     </span>
 
