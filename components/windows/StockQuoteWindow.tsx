@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSymbolSelection } from '@/context/SymbolSelectionContext';
 
 interface StockQuoteConfig {
   symbol?: string;
@@ -15,6 +16,16 @@ export function StockQuoteWindow({ config }: StockQuoteWindowProps) {
   const [quoteData, setQuoteData] = useState<any>(null);
   const [newsData, setNewsData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Listen to global symbol selection
+  const { selectedSymbol } = useSymbolSelection();
+
+  // Update symbol when a ticker is clicked anywhere in the app
+  useEffect(() => {
+    if (selectedSymbol) {
+      setSymbol(selectedSymbol);
+    }
+  }, [selectedSymbol]);
 
   // Fetch stock quote data
   useEffect(() => {

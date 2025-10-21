@@ -10,6 +10,7 @@ import { getChangeColor } from '@/lib/colorCoding';
 import { useTableSort } from '@/hooks/useTableSort';
 import { useColumnResize } from '@/hooks/useColumnResize';
 import { useDataFlash } from '@/hooks/useDataFlash';
+import { useSymbolSelection } from '@/context/SymbolSelectionContext';
 
 interface ScannerWindowProps {
   config?: ScannerConfig;
@@ -21,6 +22,9 @@ export function ScannerWindow({ config }: ScannerWindowProps) {
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [tickersWithRecentNews, setTickersWithRecentNews] = useState<Set<string>>(new Set());
   const [tickersWithDayOldNews, setTickersWithDayOldNews] = useState<Set<string>>(new Set());
+
+  // Symbol selection for cross-window sync
+  const { setSelectedSymbol } = useSymbolSelection();
 
   // Use column resize hook
   const { columns, setColumns, handleResizeStart } = useColumnResize(
@@ -339,7 +343,9 @@ export function ScannerWindow({ config }: ScannerWindowProps) {
                   return (
                     <td
                       key={col.id}
-                      className={`scanner-cell ${flashClass}`}
+                      className={`scanner-cell ${flashClass} ${isSymbolColumn ? 'cursor-pointer hover:bg-[var(--bg-hover)]' : ''}`}
+                      onClick={isSymbolColumn ? () => setSelectedSymbol(stock.symbol) : undefined}
+                      style={isSymbolColumn ? { transition: 'background 150ms ease' } : undefined}
                     >
                       {formatValue(stock[col.key as keyof MarketMover], col.format, col.colorCode)}
                       {isSymbolColumn && hasRecentNews && <span className="ml-1" style={{ filter: 'hue-rotate(0deg)' }}>🔥</span>}

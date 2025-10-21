@@ -6,6 +6,7 @@ import { FilterProvider } from "@/context/FilterContext";
 import { AlertProvider } from "@/context/AlertContext";
 import { WindowProvider } from "@/context/WindowContext";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { SymbolSelectionProvider } from "@/context/SymbolSelectionContext";
 import { AlertNotifications } from "@/components/AlertNotifications";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -28,10 +29,12 @@ export default function RootLayout({
           <QueryProvider>
             <FilterProvider>
               <AlertProvider>
-                <WindowProvider>
-                  <AlertNotifications />
-                  {children}
-                </WindowProvider>
+                <SymbolSelectionProvider>
+                  <WindowProvider>
+                    <AlertNotifications />
+                    {children}
+                  </WindowProvider>
+                </SymbolSelectionProvider>
               </AlertProvider>
             </FilterProvider>
           </QueryProvider>
