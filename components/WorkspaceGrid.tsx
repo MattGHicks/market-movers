@@ -101,7 +101,8 @@ export function WorkspaceGrid() {
         onLayoutChange={handleLayoutChange}
         draggableHandle=".window-header"
         draggableCancel=".no-drag"
-        compactType={null}
+        compactType="vertical"
+        verticalCompact={true}
         preventCollision={false}
         isBounded={true}
         useCSSTransforms={true}

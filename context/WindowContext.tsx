@@ -104,15 +104,15 @@ export function WindowProvider({ children }: { children: ReactNode }) {
       zIndex: 1,
       focused: false,
     },
-    // Bottom row: News (8 cols) + Alerts (8 cols), 5 rows
+    // Bottom row: Stock Quote (8 cols) + Alerts (8 cols), 5 rows
     {
-      id: 'default-news',
-      title: 'Market News',
-      type: 'news',
+      id: 'default-stock-quote',
+      title: 'Stock Quote',
+      type: 'stock-quote',
       config: {
-        type: 'news',
+        type: 'stock-quote',
         config: {
-          maxItems: 20,
+          symbol: 'AAPL',
         },
       },
       layout: { x: 0, y: 4, w: 8, h: 5, minW: 3, minH: 2 },
