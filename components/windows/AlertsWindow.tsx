@@ -8,19 +8,6 @@ export function AlertsWindow() {
 
   return (
     <div className="h-full flex flex-col" style={{ background: 'var(--bg-secondary)' }}>
-      {/* Header */}
-      <div
-        className="px-3 py-2"
-        style={{
-          background: 'var(--bg-tertiary)',
-          borderBottom: '1px solid var(--border-primary)',
-        }}
-      >
-        <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
-          {alerts.length} active alerts
-        </span>
-      </div>
-
       {/* Alerts List */}
       <div className="flex-1 overflow-auto">
         {alerts.length > 0 ? (

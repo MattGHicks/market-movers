@@ -17,9 +17,8 @@ interface ScannerWindowProps {
 }
 
 export function ScannerWindow({ config }: ScannerWindowProps) {
-  const [showColumnConfig, setShowColumnConfig] = useState(false);
-  const [refreshRate, setRefreshRate] = useState<number>(30000); // Default 30s
-  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [refreshRate] = useState<number>(3000); // Fixed 3s auto-refresh
+  const [autoRefresh] = useState(true);
   const [tickersWithRecentNews, setTickersWithRecentNews] = useState<Set<string>>(new Set());
   const [tickersWithDayOldNews, setTickersWithDayOldNews] = useState<Set<string>>(new Set());
 
@@ -27,7 +26,7 @@ export function ScannerWindow({ config }: ScannerWindowProps) {
   const { setSelectedSymbol } = useSymbolSelection();
 
   // Use column resize hook
-  const { columns, setColumns, handleResizeStart } = useColumnResize(
+  const { columns, handleResizeStart } = useColumnResize(
     config?.columns || DEFAULT_SCANNER_COLUMNS
   );
 
@@ -136,145 +135,10 @@ export function ScannerWindow({ config }: ScannerWindowProps) {
     );
   };
 
-  const toggleColumn = (columnId: string) => {
-    setColumns(prev =>
-      prev.map(col =>
-        col.id === columnId ? { ...col, visible: !col.visible } : col
-      )
-    );
-  };
-
   const visibleColumns = columns.filter(col => col.visible);
 
   return (
     <div className="h-full flex flex-col" style={{ background: 'var(--bg-secondary)' }}>
-      {/* Toolbar */}
-      <div
-        className="flex items-center justify-between px-3 py-2"
-        style={{
-          background: 'var(--bg-tertiary)',
-          borderBottom: '1px solid var(--border-primary)',
-        }}
-      >
-        <div className="flex items-center gap-3">
-          <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
-            {sortedData?.length || 0} stocks
-          </span>
-
-          {/* Freeze/Resume Button */}
-          <button
-            onClick={() => setAutoRefresh(!autoRefresh)}
-            className="px-2 py-1 text-xs rounded transition-colors flex items-center gap-1"
-            style={{
-              background: autoRefresh ? 'var(--bg-hover)' : 'var(--yellow-bg)',
-              color: autoRefresh ? 'var(--text-secondary)' : 'var(--yellow-base)',
-              border: '1px solid var(--border-primary)',
-            }}
-            title={autoRefresh ? 'Pause auto-refresh' : 'Resume auto-refresh'}
-          >
-            {autoRefresh ? '⏸' : '▶'} {autoRefresh ? 'Freeze' : 'Resume'}
-          </button>
-
-          {/* Refresh Rate Selector */}
-          <select
-            value={refreshRate}
-            onChange={(e) => setRefreshRate(Number(e.target.value))}
-            className="text-xs rounded px-2 py-1 transition-colors"
-            style={{
-              background: 'var(--bg-hover)',
-              color: 'var(--text-secondary)',
-              border: '1px solid var(--border-primary)',
-            }}
-            disabled={!autoRefresh}
-          >
-            <option value={5000}>5s</option>
-            <option value={10000}>10s</option>
-            <option value={30000}>30s</option>
-            <option value={60000}>1m</option>
-          </select>
-
-          {/* Manual Refresh Button */}
-          <button
-            onClick={() => refetch()}
-            className="px-2 py-1 text-xs rounded transition-colors"
-            style={{
-              background: 'var(--bg-hover)',
-              color: 'var(--text-secondary)',
-              border: '1px solid var(--border-primary)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--bg-active)';
-              e.currentTarget.style.color = 'var(--text-primary)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'var(--bg-hover)';
-              e.currentTarget.style.color = 'var(--text-secondary)';
-            }}
-            title="Refresh now"
-          >
-            🔄 Refresh
-          </button>
-        </div>
-
-        {/* Columns Button */}
-        <button
-          onClick={() => setShowColumnConfig(!showColumnConfig)}
-          className="px-2 py-1 text-xs rounded transition-colors"
-          style={{
-            background: showColumnConfig ? 'var(--bg-active)' : 'var(--bg-hover)',
-            color: showColumnConfig ? 'var(--text-primary)' : 'var(--text-secondary)',
-            border: '1px solid var(--border-primary)',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'var(--bg-active)';
-            e.currentTarget.style.color = 'var(--text-primary)';
-          }}
-          onMouseLeave={(e) => {
-            if (!showColumnConfig) {
-              e.currentTarget.style.background = 'var(--bg-hover)';
-              e.currentTarget.style.color = 'var(--text-secondary)';
-            }
-          }}
-        >
-          Columns
-        </button>
-      </div>
-
-      {/* Column Configuration */}
-      {showColumnConfig && (
-        <div
-          className="px-3 py-2"
-          style={{
-            background: 'var(--bg-tertiary)',
-            borderBottom: '1px solid var(--border-primary)',
-          }}
-        >
-          <div className="flex flex-wrap gap-2">
-            {columns.map(col => (
-              <label
-                key={col.id}
-                className="flex items-center gap-1 text-xs cursor-pointer px-2 py-1 rounded transition-colors"
-                style={{ color: 'var(--text-secondary)' }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'var(--bg-hover)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'transparent';
-                }}
-              >
-                <input
-                  type="checkbox"
-                  checked={col.visible}
-                  onChange={() => toggleColumn(col.id)}
-                  className="rounded"
-                />
-                <span>{col.label}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Table */}
       <div className="flex-1 overflow-auto">
         <table className="scanner-table">
