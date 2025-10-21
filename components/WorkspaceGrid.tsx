@@ -11,17 +11,19 @@ export function WorkspaceGrid() {
   const { windows, updateLayout, focusWindow } = useWindows();
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(1200);
+  const [containerHeight, setContainerHeight] = useState(800);
   const [isDragging, setIsDragging] = useState(false);
 
   // Fixed grid: 16 columns x 9 rows
   const GRID_COLS = 16;
   const GRID_ROWS = 9;
 
-  // Update container width on mount and resize
+  // Update container dimensions on mount and resize
   useEffect(() => {
-    const updateWidth = () => {
+    const updateDimensions = () => {
       if (containerRef.current) {
         setContainerWidth(containerRef.current.offsetWidth);
+        setContainerHeight(containerRef.current.offsetHeight);
       }
     };
 
@@ -29,11 +31,11 @@ export function WorkspaceGrid() {
     let resizeTimer: NodeJS.Timeout;
     const handleResize = () => {
       clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(updateWidth, 100);
+      resizeTimer = setTimeout(updateDimensions, 100);
     };
 
-    // Initial width
-    updateWidth();
+    // Initial dimensions
+    updateDimensions();
 
     // Add resize listener
     window.addEventListener('resize', handleResize);
@@ -44,6 +46,9 @@ export function WorkspaceGrid() {
       clearTimeout(resizeTimer);
     };
   }, []);
+
+  // Calculate row height to fill container
+  const rowHeight = Math.floor((containerHeight - 16) / GRID_ROWS);
 
   // Convert window layouts to react-grid-layout format
   const layouts: Layout[] = windows.map(window => ({
@@ -87,7 +92,7 @@ export function WorkspaceGrid() {
         className="layout h-full"
         layout={layouts}
         cols={GRID_COLS}
-        rowHeight={containerRef.current ? (containerRef.current.offsetHeight - 16) / GRID_ROWS : 100}
+        rowHeight={rowHeight}
         width={containerWidth}
         maxRows={GRID_ROWS}
         autoSize={false}
