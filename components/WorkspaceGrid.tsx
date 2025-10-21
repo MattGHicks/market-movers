@@ -48,7 +48,9 @@ export function WorkspaceGrid() {
   }, []);
 
   // Calculate row height to fill container
-  const rowHeight = Math.floor((containerHeight - 16) / GRID_ROWS);
+  // Account for: containerPadding (8px top + 8px bottom = 16px) + margin between rows (8px × 8 gaps = 64px)
+  const totalVerticalSpacing = 16 + (GRID_ROWS - 1) * 8; // containerPadding + row margins
+  const rowHeight = Math.floor((containerHeight - totalVerticalSpacing) / GRID_ROWS);
 
   // Convert window layouts to react-grid-layout format
   const layouts: Layout[] = windows.map(window => ({
