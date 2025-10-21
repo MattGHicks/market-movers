@@ -23,27 +23,12 @@ interface WindowContextType {
 const WindowContext = createContext<WindowContextType | undefined>(undefined);
 
 export function WindowProvider({ children }: { children: ReactNode }) {
-  // Calculate optimal window height based on viewport
-  const getOptimalHeight = () => {
-    const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
-    const menuBarHeight = 60;
-    const rowHeight = 80;
-    const padding = 16;
-    const margin = 16;
-    const availableHeight = viewportHeight - menuBarHeight - padding - margin;
-    const totalRows = Math.floor(availableHeight / rowHeight);
-
-    // 5 windows total: 3 scanners in top row, 2 windows in bottom row
-    const topRowHeight = Math.floor(totalRows / 2);
-    const bottomRowHeight = totalRows - topRowHeight;
-
-    return { topRowHeight, bottomRowHeight };
-  };
-
-  const { topRowHeight, bottomRowHeight } = getOptimalHeight();
+  // Fixed grid: 16 columns x 9 rows
+  const GRID_COLS = 16;
+  const GRID_ROWS = 9;
 
   const [windows, setWindows] = useState<WindowInstance[]>([
-    // Top row: 3 scanners (4 columns each)
+    // Top row: 3 scanners (~5 columns each, 4 rows)
     {
       id: 'default-gainers',
       title: 'Top Gainers',
@@ -65,7 +50,7 @@ export function WindowProvider({ children }: { children: ReactNode }) {
           maxRows: 50,
         },
       },
-      layout: { x: 0, y: 0, w: 4, h: topRowHeight, minW: 3, minH: 2 },
+      layout: { x: 0, y: 0, w: 5, h: 4, minW: 3, minH: 2 },
       zIndex: 1,
       focused: false,
     },
@@ -90,7 +75,7 @@ export function WindowProvider({ children }: { children: ReactNode }) {
           maxRows: 50,
         },
       },
-      layout: { x: 4, y: 0, w: 4, h: topRowHeight, minW: 3, minH: 2 },
+      layout: { x: 5, y: 0, w: 6, h: 4, minW: 3, minH: 2 },
       zIndex: 1,
       focused: false,
     },
@@ -115,11 +100,11 @@ export function WindowProvider({ children }: { children: ReactNode }) {
           maxRows: 50,
         },
       },
-      layout: { x: 8, y: 0, w: 4, h: topRowHeight, minW: 3, minH: 2 },
+      layout: { x: 11, y: 0, w: 5, h: 4, minW: 3, minH: 2 },
       zIndex: 1,
       focused: false,
     },
-    // Bottom row: News (6 cols) + Alerts (6 cols)
+    // Bottom row: News (8 cols) + Alerts (8 cols), 5 rows
     {
       id: 'default-news',
       title: 'Market News',
@@ -130,7 +115,7 @@ export function WindowProvider({ children }: { children: ReactNode }) {
           maxItems: 20,
         },
       },
-      layout: { x: 0, y: topRowHeight, w: 6, h: bottomRowHeight, minW: 3, minH: 2 },
+      layout: { x: 0, y: 4, w: 8, h: 5, minW: 3, minH: 2 },
       zIndex: 1,
       focused: false,
     },
@@ -142,7 +127,7 @@ export function WindowProvider({ children }: { children: ReactNode }) {
         type: 'alerts',
         config: {},
       },
-      layout: { x: 6, y: topRowHeight, w: 6, h: bottomRowHeight, minW: 3, minH: 2 },
+      layout: { x: 8, y: 4, w: 8, h: 5, minW: 3, minH: 2 },
       zIndex: 1,
       focused: false,
     },
@@ -162,20 +147,13 @@ export function WindowProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    // Calculate optimal height based on viewport (assuming 80px row height + 16px padding)
-    // Viewport height minus menu bar (~60px) divided by row height
-    const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
-    const menuBarHeight = 60;
-    const rowHeight = 80;
-    const availableHeight = viewportHeight - menuBarHeight - 16; // 16px for padding
-    const optimalRows = Math.floor(availableHeight / rowHeight);
-    const defaultHeight = Math.max(6, Math.min(optimalRows, 12)); // Between 6-12 rows
+    // Fixed grid: 16 columns x 9 rows
+    const defaultWidth = 8;  // Half of 16 columns
+    const defaultHeight = 4; // About half of 9 rows
 
     // Find first available position (top-left first-fit)
-    const defaultWidth = 6;
-
-    for (let y = 0; y < 100; y++) { // Max 100 rows
-      for (let x = 0; x <= 12 - defaultWidth; x++) {
+    for (let y = 0; y <= GRID_ROWS - defaultHeight; y++) {
+      for (let x = 0; x <= GRID_COLS - defaultWidth; x++) {
         let canFit = true;
 
         // Check if position is available
@@ -193,9 +171,8 @@ export function WindowProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    // If no space found, place at bottom
-    const maxY = Math.max(...windows.map(w => w.layout.y + w.layout.h), 0);
-    return { x: 0, y: maxY, w: defaultWidth, h: defaultHeight };
+    // If no space found, place at (0,0) - overlapping
+    return { x: 0, y: 0, w: defaultWidth, h: defaultHeight };
   }, []);
 
   // Add a new window
@@ -213,95 +190,23 @@ export function WindowProvider({ children }: { children: ReactNode }) {
         y: position.y,
         w: position.w,
         h: position.h,
-        minW: 3,
-        minH: 2,
+        minW: 2,
+        minH: 1,
       },
       zIndex: maxZIndex + 1,
       focused: true,
     };
 
-    // Add new window and auto-resize all windows to fit viewport
-    setWindows(prev => {
-      const allWindows = [
-        ...prev.map(w => ({ ...w, focused: false })),
-        newWindow
-      ];
-
-      // Auto-resize windows to fit viewport height
-      const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
-      const menuBarHeight = 60;
-      const rowHeight = 80;
-      const padding = 16;
-      const margin = 16;
-      const availableHeight = viewportHeight - menuBarHeight - padding - margin;
-      const totalRows = Math.floor(availableHeight / rowHeight);
-
-      // Find all unique Y positions to determine vertical stacking
-      const yPositions = [...new Set(allWindows.map(w => w.layout.y))].sort((a, b) => a - b);
-
-      if (yPositions.length > 1) {
-        // Windows are stacked - resize to fit
-        const rowsPerWindow = Math.floor(totalRows / yPositions.length);
-        const minRows = 3;
-        const finalRows = Math.max(rowsPerWindow, minRows);
-
-        return allWindows.map(w => {
-          const yIndex = yPositions.indexOf(w.layout.y);
-          return {
-            ...w,
-            layout: {
-              ...w.layout,
-              y: yIndex * finalRows,
-              h: finalRows,
-            },
-          };
-        });
-      }
-
-      return allWindows;
-    });
+    // Add new window (no auto-resize with fixed grid)
+    setWindows(prev => [
+      ...prev.map(w => ({ ...w, focused: false })),
+      newWindow
+    ]);
   }, [windows, findFirstAvailablePosition]);
 
   // Remove a window
   const removeWindow = useCallback((id: string) => {
-    setWindows(prev => {
-      const remainingWindows = prev.filter(w => w.id !== id);
-
-      if (remainingWindows.length === 0) return remainingWindows;
-
-      // Auto-resize remaining windows to fit viewport height
-      const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
-      const menuBarHeight = 60;
-      const rowHeight = 80;
-      const padding = 16;
-      const margin = 16;
-      const availableHeight = viewportHeight - menuBarHeight - padding - margin;
-      const totalRows = Math.floor(availableHeight / rowHeight);
-
-      // Find all unique Y positions to determine vertical stacking
-      const yPositions = [...new Set(remainingWindows.map(w => w.layout.y))].sort((a, b) => a - b);
-
-      if (yPositions.length > 1) {
-        // Windows are stacked - resize to fit
-        const rowsPerWindow = Math.floor(totalRows / yPositions.length);
-        const minRows = 3;
-        const finalRows = Math.max(rowsPerWindow, minRows);
-
-        return remainingWindows.map(w => {
-          const yIndex = yPositions.indexOf(w.layout.y);
-          return {
-            ...w,
-            layout: {
-              ...w.layout,
-              y: yIndex * finalRows,
-              h: finalRows,
-            },
-          };
-        });
-      }
-
-      return remainingWindows;
-    });
+    setWindows(prev => prev.filter(w => w.id !== id));
   }, []);
 
   // Update window properties
@@ -361,25 +266,12 @@ export function WindowProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  // Fit all windows to viewport
+  // Fit all windows to grid (16x9 fixed grid)
   const fitAllWindows = useCallback(() => {
-    const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
-    const menuBarHeight = 60;
-    const rowHeight = 80;
-    const padding = 16;
-    const margin = 16; // Total margin between windows
-    const availableHeight = viewportHeight - menuBarHeight - padding - margin;
-    const totalRows = Math.floor(availableHeight / rowHeight);
-
     setWindows(prev => {
       if (prev.length === 0) return prev;
 
-      // Calculate how many rows each window should get
-      const rowsPerWindow = Math.floor(totalRows / prev.length);
-      const minRows = 3; // Minimum 3 rows per window
-      const finalRows = Math.max(rowsPerWindow, minRows);
-
-      // Arrange windows in a grid layout that fills viewport
+      // Arrange windows in a grid layout that fills the 16x9 grid
       return prev.map((window, index) => {
         // Arrange in 2 columns if more than 2 windows
         const cols = prev.length > 2 ? 2 : 1;
@@ -388,9 +280,10 @@ export function WindowProvider({ children }: { children: ReactNode }) {
         const col = Math.floor(index / windowsPerCol);
         const row = index % windowsPerCol;
 
-        const width = cols === 2 ? 6 : 12;
-        const x = col * 6;
-        const y = row * finalRows;
+        const width = cols === 2 ? 8 : GRID_COLS; // Half grid or full grid
+        const height = Math.floor(GRID_ROWS / windowsPerCol);
+        const x = col * 8;
+        const y = row * height;
 
         return {
           ...window,
@@ -399,7 +292,7 @@ export function WindowProvider({ children }: { children: ReactNode }) {
             x,
             y,
             w: width,
-            h: finalRows,
+            h: height,
           },
         };
       });

@@ -11,24 +11,17 @@ export function WorkspaceGrid() {
   const { windows, updateLayout, focusWindow } = useWindows();
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(1200);
-  const [maxRows, setMaxRows] = useState(20);
   const [isDragging, setIsDragging] = useState(false);
 
-  // Update container width and max rows on mount and resize
+  // Fixed grid: 16 columns x 9 rows
+  const GRID_COLS = 16;
+  const GRID_ROWS = 9;
+
+  // Update container width on mount and resize
   useEffect(() => {
-    const updateDimensions = () => {
+    const updateWidth = () => {
       if (containerRef.current) {
         setContainerWidth(containerRef.current.offsetWidth);
-
-        // Calculate max rows based on viewport height
-        const viewportHeight = window.innerHeight;
-        const menuBarHeight = 60;
-        const rowHeight = 80;
-        const padding = 16;
-        const margin = 16;
-        const availableHeight = viewportHeight - menuBarHeight - padding - margin;
-        const calculatedMaxRows = Math.floor(availableHeight / rowHeight);
-        setMaxRows(calculatedMaxRows);
       }
     };
 
@@ -36,11 +29,11 @@ export function WorkspaceGrid() {
     let resizeTimer: NodeJS.Timeout;
     const handleResize = () => {
       clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(updateDimensions, 100);
+      resizeTimer = setTimeout(updateWidth, 100);
     };
 
-    // Initial dimensions
-    updateDimensions();
+    // Initial width
+    updateWidth();
 
     // Add resize listener
     window.addEventListener('resize', handleResize);
@@ -59,9 +52,9 @@ export function WorkspaceGrid() {
     y: window.layout.y,
     w: window.layout.w,
     h: window.layout.h,
-    minW: window.layout.minW || 3,
-    minH: window.layout.minH || 2,
-    maxH: maxRows, // Prevent windows from extending beyond viewport
+    minW: window.layout.minW || 2,
+    minH: window.layout.minH || 1,
+    maxH: GRID_ROWS, // Max height = 9 rows
   }));
 
   const handleLayoutChange = (newLayout: Layout[]) => {
@@ -93,15 +86,15 @@ export function WorkspaceGrid() {
       <GridLayout
         className="layout h-full"
         layout={layouts}
-        cols={12}
-        rowHeight={80}
+        cols={GRID_COLS}
+        rowHeight={containerRef.current ? (containerRef.current.offsetHeight - 16) / GRID_ROWS : 100}
         width={containerWidth}
-        maxRows={maxRows}
+        maxRows={GRID_ROWS}
         autoSize={false}
         onLayoutChange={handleLayoutChange}
         draggableHandle=".window-header"
         draggableCancel=".no-drag"
-        compactType="vertical"
+        compactType={null}
         preventCollision={false}
         isBounded={true}
         useCSSTransforms={true}
