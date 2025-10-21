@@ -22,7 +22,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      {/* suppressHydrationWarning: Browser extensions (password managers, etc.) add attributes to body */}
+      <body className={inter.className} suppressHydrationWarning>
         <ThemeProvider>
           <QueryProvider>
             <FilterProvider>
