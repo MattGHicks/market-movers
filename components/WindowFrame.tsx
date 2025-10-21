@@ -5,6 +5,7 @@ import { useWindows } from '@/context/WindowContext';
 import { ScannerWindow } from './windows/ScannerWindow';
 import { NewsWindow } from './windows/NewsWindow';
 import { AlertsWindow } from './windows/AlertsWindow';
+import { StockQuoteWindow } from './windows/StockQuoteWindow';
 
 interface WindowFrameProps {
   window: WindowInstance;
@@ -29,6 +30,8 @@ export function WindowFrame({ window }: WindowFrameProps) {
         return <NewsWindow config={window.config.type === 'news' ? window.config.config : undefined} />;
       case 'alerts':
         return <AlertsWindow />;
+      case 'stock-quote':
+        return <StockQuoteWindow config={window.config.type === 'stock-quote' ? window.config.config : undefined} />;
       default:
         return <div className="p-4 text-slate-400">Window type not implemented yet</div>;
     }

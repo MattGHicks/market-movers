@@ -43,6 +43,16 @@ export function MenuBar() {
     setShowNewMenu(false);
   };
 
+  const createStockQuoteWindow = () => {
+    addWindow('stock-quote', 'Stock Quote', {
+      type: 'stock-quote',
+      config: {
+        symbol: 'AAPL',
+      },
+    });
+    setShowNewMenu(false);
+  };
+
   return (
     <div style={{
       background: 'var(--bg-secondary)',
@@ -119,6 +129,13 @@ export function MenuBar() {
                 className="w-full px-4 py-2 text-left text-sm transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
               >
                 🔔 Alerts Window
+              </button>
+              <button
+                onClick={createStockQuoteWindow}
+                style={{ color: 'var(--text-secondary)' }}
+                className="w-full px-4 py-2 text-left text-sm transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+              >
+                📊 Stock Quote Window
               </button>
             </div>
           )}

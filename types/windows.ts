@@ -10,7 +10,8 @@ export type WindowType =
   | 'news'         // News feed
   | 'chart'        // Stock chart
   | 'single-stock' // Single stock details
-  | 'watchlist';   // Watchlist
+  | 'watchlist'    // Watchlist
+  | 'stock-quote'; // Stock quote with news and metrics
 
 /**
  * Column Configuration for tables
@@ -57,6 +58,13 @@ export interface ChartConfig {
 }
 
 /**
+ * Stock Quote Configuration
+ */
+export interface StockQuoteConfig {
+  symbol?: string; // Default symbol to display
+}
+
+/**
  * Window Configuration - Specific to each window type
  */
 export type WindowConfig =
@@ -65,7 +73,8 @@ export type WindowConfig =
   | { type: 'news'; config: NewsConfig }
   | { type: 'chart'; config: ChartConfig }
   | { type: 'single-stock'; config: { symbol: string } }
-  | { type: 'watchlist'; config: { symbols: string[] } };
+  | { type: 'watchlist'; config: { symbols: string[] } }
+  | { type: 'stock-quote'; config: StockQuoteConfig };
 
 /**
  * Window Instance - Represents a single window in the workspace
