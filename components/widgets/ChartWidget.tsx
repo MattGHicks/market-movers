@@ -28,7 +28,7 @@ export function ChartWidget({ config }: ChartWidgetProps) {
   const [inputSymbol, setInputSymbol] = useState(symbol);
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
-  const seriesRef = useRef<ISeriesApi<'Area'> | null>(null);
+  const seriesRef = useRef<ISeriesApi<'Line'> | null>(null);
   const [priceData, setPriceData] = useState<{ time: number; value: number }[]>([]);
 
   const stock = getStock(symbol);
@@ -58,10 +58,8 @@ export function ChartWidget({ config }: ChartWidgetProps) {
       },
     });
 
-    const areaSeries = chart.addAreaSeries({
-      lineColor: '#22c55e',
-      topColor: 'rgba(34, 197, 94, 0.4)',
-      bottomColor: 'rgba(34, 197, 94, 0.0)',
+    const areaSeries = chart.addLineSeries({
+      color: '#22c55e',
       lineWidth: 2,
     });
 
@@ -119,9 +117,7 @@ export function ChartWidget({ config }: ChartWidgetProps) {
       // Update color based on stock change
       const isPositive = stock.changePercent >= 0;
       seriesRef.current.applyOptions({
-        lineColor: isPositive ? '#22c55e' : '#ef4444',
-        topColor: isPositive ? 'rgba(34, 197, 94, 0.4)' : 'rgba(239, 68, 68, 0.4)',
-        bottomColor: isPositive ? 'rgba(34, 197, 94, 0.0)' : 'rgba(239, 68, 68, 0.0)',
+        color: isPositive ? '#22c55e' : '#ef4444',
       });
 
       // Fit content to chart
