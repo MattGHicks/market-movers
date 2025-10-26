@@ -8,7 +8,7 @@ import { useMarketData } from '@/contexts/MarketDataContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search } from 'lucide-react';
-import { createChart, ColorType, IChartApi, ISeriesApi } from 'lightweight-charts';
+import { createChart, ColorType, IChartApi, ISeriesApi, LineSeries } from 'lightweight-charts';
 
 interface ChartWidgetConfig extends WidgetConfig {
   settings: {
@@ -58,7 +58,7 @@ export function ChartWidget({ config }: ChartWidgetProps) {
       },
     });
 
-    const areaSeries = chart.addLineSeries({
+    const areaSeries = chart.addSeries(LineSeries, {
       color: '#22c55e',
       lineWidth: 2,
     });
