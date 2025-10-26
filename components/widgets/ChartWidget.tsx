@@ -20,14 +20,6 @@ interface ChartWidgetProps {
   config: ChartWidgetConfig;
 }
 
-interface CandlestickData {
-  time: number;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-}
-
 export function ChartWidget({ config }: ChartWidgetProps) {
   const { removeWidget, updateWidget } = useWidgetStore();
   const { getStock, subscribe, unsubscribe } = useMarketData();
@@ -36,8 +28,8 @@ export function ChartWidget({ config }: ChartWidgetProps) {
   const [inputSymbol, setInputSymbol] = useState(symbol);
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
-  const seriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
-  const [candleData, setCandleData] = useState<CandlestickData[]>([]);
+  const seriesRef = useRef<ISeriesApi<'Area'> | null>(null);
+  const [priceData, setPriceData] = useState<{ time: number; value: number }[]>([]);
 
   const stock = getStock(symbol);
 
@@ -66,17 +58,15 @@ export function ChartWidget({ config }: ChartWidgetProps) {
       },
     });
 
-    const candlestickSeries = chart.addCandlestickSeries({
-      upColor: '#22c55e',
-      downColor: '#ef4444',
-      borderUpColor: '#22c55e',
-      borderDownColor: '#ef4444',
-      wickUpColor: '#22c55e',
-      wickDownColor: '#ef4444',
+    const areaSeries = chart.addAreaSeries({
+      lineColor: '#22c55e',
+      topColor: 'rgba(34, 197, 94, 0.4)',
+      bottomColor: 'rgba(34, 197, 94, 0.0)',
+      lineWidth: 2,
     });
 
     chartRef.current = chart;
-    seriesRef.current = candlestickSeries;
+    seriesRef.current = areaSeries;
 
     // Handle resize
     const handleResize = () => {
@@ -97,65 +87,65 @@ export function ChartWidget({ config }: ChartWidgetProps) {
     };
   }, []);
 
-  // Generate candlestick data
+  // Generate price data
   useEffect(() => {
     if (!stock) return;
 
-    const data: CandlestickData[] = [];
+    const data: { time: number; value: number }[] = [];
     const now = Math.floor(Date.now() / 1000);
     const basePrice = stock.price;
     const interval = 5 * 60; // 5 minutes
 
-    // Generate 50 candles
+    // Generate 50 data points
     for (let i = 50; i >= 0; i--) {
       const time = now - i * interval;
       const variance = (Math.random() - 0.5) * basePrice * 0.02;
-      const open = basePrice + variance;
-      const close = open + (Math.random() - 0.5) * basePrice * 0.015;
-      const high = Math.max(open, close) + Math.random() * basePrice * 0.01;
-      const low = Math.min(open, close) - Math.random() * basePrice * 0.01;
+      const price = basePrice + variance;
 
       data.push({
         time,
-        open,
-        high,
-        low,
-        close,
+        value: price,
       });
     }
 
-    setCandleData(data);
+    setPriceData(data);
   }, [stock, symbol]);
 
   // Update chart when data changes
   useEffect(() => {
-    if (seriesRef.current && candleData.length > 0) {
-      seriesRef.current.setData(candleData);
+    if (seriesRef.current && priceData.length > 0 && stock) {
+      seriesRef.current.setData(priceData);
+
+      // Update color based on stock change
+      const isPositive = stock.changePercent >= 0;
+      seriesRef.current.applyOptions({
+        lineColor: isPositive ? '#22c55e' : '#ef4444',
+        topColor: isPositive ? 'rgba(34, 197, 94, 0.4)' : 'rgba(239, 68, 68, 0.4)',
+        bottomColor: isPositive ? 'rgba(34, 197, 94, 0.0)' : 'rgba(239, 68, 68, 0.0)',
+      });
 
       // Fit content to chart
       if (chartRef.current) {
         chartRef.current.timeScale().fitContent();
       }
     }
-  }, [candleData]);
+  }, [priceData, stock]);
 
   // Subscribe to real-time updates
   useEffect(() => {
     if (!stock) return;
 
     const updateHandler = (updatedStock: any) => {
-      if (updatedStock.symbol === symbol && candleData.length > 0) {
-        // Update the last candle with new price
-        const lastCandle = candleData[candleData.length - 1];
-        const newCandle = {
-          ...lastCandle,
-          close: updatedStock.price,
-          high: Math.max(lastCandle.high, updatedStock.price),
-          low: Math.min(lastCandle.low, updatedStock.price),
+      if (updatedStock.symbol === symbol && priceData.length > 0) {
+        // Update the last price point with new price
+        const now = Math.floor(Date.now() / 1000);
+        const newPoint = {
+          time: now,
+          value: updatedStock.price,
         };
 
-        const newData = [...candleData.slice(0, -1), newCandle];
-        setCandleData(newData);
+        const newData = [...priceData.slice(1), newPoint];
+        setPriceData(newData);
       }
     };
 
@@ -164,7 +154,7 @@ export function ChartWidget({ config }: ChartWidgetProps) {
     return () => {
       unsubscribe(symbol, updateHandler);
     };
-  }, [symbol, candleData, stock, subscribe, unsubscribe]);
+  }, [symbol, priceData, stock, subscribe, unsubscribe]);
 
   const handleRefresh = () => {
     setIsLoading(true);
@@ -275,13 +265,13 @@ export function ChartWidget({ config }: ChartWidgetProps) {
           <div>
             <div className="text-muted-foreground">High</div>
             <div className="font-semibold">
-              ${formatNumber(candleData.length > 0 ? Math.max(...candleData.map(c => c.high)) : stock.price)}
+              ${formatNumber(priceData.length > 0 ? Math.max(...priceData.map(p => p.value)) : stock.price)}
             </div>
           </div>
           <div>
             <div className="text-muted-foreground">Low</div>
             <div className="font-semibold">
-              ${formatNumber(candleData.length > 0 ? Math.min(...candleData.map(c => c.low)) : stock.price)}
+              ${formatNumber(priceData.length > 0 ? Math.min(...priceData.map(p => p.value)) : stock.price)}
             </div>
           </div>
           <div>
