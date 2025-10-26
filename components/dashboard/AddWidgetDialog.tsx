@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { BarChart, Star, LineChart, Newspaper, BarChart3 } from 'lucide-react';
+import { BarChart, Star, LineChart, Newspaper, BarChart3, Bell } from 'lucide-react';
 
 interface WidgetOption {
   id: string;
@@ -54,6 +54,13 @@ const widgetOptions: WidgetOption[] = [
     description: 'Track your favorite stocks with custom symbol list',
     icon: Star,
     type: 'watchlist',
+  },
+  {
+    id: 'alerts',
+    name: 'Alerts',
+    description: 'Create strategies and get alerts when conditions are met (price, volume, new highs/lows)',
+    icon: Bell,
+    type: 'alerts',
   },
 ];
 

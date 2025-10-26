@@ -50,6 +50,12 @@ export default function Home() {
           symbol: 'AAPL',
         },
       },
+      'alerts': {
+        name: 'Alerts',
+        settings: {
+          strategies: [],
+        },
+      },
     };
 
     const defaults = widgetDefaults[widgetType] || { name: 'New Widget', settings: {} };
