@@ -66,19 +66,20 @@ export function ChartWidget({ config }: ChartWidgetProps) {
     chartRef.current = chart;
     seriesRef.current = areaSeries;
 
-    // Handle resize
-    const handleResize = () => {
-      if (chartContainerRef.current && chartRef.current) {
+    // Handle resize using ResizeObserver for widget resizing
+    const resizeObserver = new ResizeObserver((entries) => {
+      if (chartRef.current && chartContainerRef.current) {
+        const { width } = entries[0].contentRect;
         chartRef.current.applyOptions({
-          width: chartContainerRef.current.clientWidth,
+          width: width,
         });
       }
-    };
+    });
 
-    window.addEventListener('resize', handleResize);
+    resizeObserver.observe(chartContainerRef.current);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      resizeObserver.disconnect();
       chart.remove();
       chartRef.current = null;
       seriesRef.current = null;
