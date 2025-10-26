@@ -1,14 +1,16 @@
 # Market Movers 📈
 
-A modern, real-time stock scanner dashboard built for day traders. Features a drag-and-drop widget system, real-time data streaming, and configurable scanner criteria.
+A modern, real-time stock scanner dashboard built for day traders. Features a drag-and-drop widget system, real-time data streaming, TradingView charts, and configurable scanner criteria with alerts.
 
 ## ✨ Features
 
 - 🎯 **Real-time Stock Scanner** - Track multiple stocks with configurable filters
+- 📊 **TradingView Charts** - Professional price charts with dynamic resizing
+- 🔔 **Alert System** - Create strategies and get real-time alerts
 - 🎨 **Drag & Drop Widgets** - Customize your dashboard layout
 - 🌙 **Dark Mode** - Built-in theme switching
 - ⚡ **High Performance** - Virtual scrolling for large datasets
-- 🔄 **Live Updates** - WebSocket-based real-time data
+- 🔄 **Live Updates** - Real-time data simulation (2-second intervals)
 - 💾 **Layout Persistence** - Save and restore your workspace
 - 📱 **Responsive** - Works on desktop and tablet devices
 
@@ -22,8 +24,8 @@ A modern, real-time stock scanner dashboard built for day traders. Features a dr
 ### Installation
 
 ```bash
-# Clone the repository (if from git)
-git clone <your-repo-url>
+# Clone the repository
+git clone https://github.com/MattGHicks/market-movers.git
 cd market-movers
 
 # Install dependencies
@@ -33,34 +35,62 @@ npm install
 npm run dev
 ```
 
-Visit `http://localhost:3000` (or `http://localhost:3001` if 3000 is busy)
+Visit `http://localhost:3000`
 
 ## 🛠️ Tech Stack
 
 - **Framework**: Next.js 15 (App Router)
-- **Language**: TypeScript
+- **Language**: TypeScript 5.6
 - **Styling**: Tailwind CSS + shadcn/ui
-- **State**: TanStack Query + Zustand
-- **Real-time**: WebSocket (next-ws)
-- **Data**: Financial Modeling Prep API / Mock Data
+- **State**: Zustand
+- **Charts**: TradingView Lightweight Charts v5
+- **Grid**: react-grid-layout
+- **Testing**: Playwright
+
+## 📊 Available Widgets
+
+### 1. **Top List Scanner**
+Customizable scanner with advanced filters for finding gainers, losers, and volume leaders.
+
+### 2. **Price Chart** (New!)
+TradingView Lightweight Charts with:
+- Real-time price updates
+- Dynamic width & height resizing
+- Symbol search
+- Color-coded gains/losses
+- High/Low/Volume stats
+
+### 3. **Alert Widget** (New!)
+Strategy builder with real-time monitoring:
+- 6 condition types (price, change%, volume, new highs/lows)
+- Alert feed with timestamps
+- Multiple strategies per widget
+
+### 4. **Market Overview**
+Track major indices: SPY, QQQ, DIA, IWM, VIX
+
+### 5. **Market News**
+Latest market news with sentiment analysis
+
+### 6. **Watchlist**
+Custom symbol tracker with add/remove functionality
 
 ## 📖 Documentation
 
-For detailed development documentation, see [CLAUDE.md](./CLAUDE.md)
+- [Widget Guide](./WIDGETS_GUIDE.md) - Detailed widget documentation
+- [Development Summary](./DEVELOPMENT_SUMMARY.md) - Architecture and progress
+- [CLAUDE.md](./CLAUDE.md) - AI-assisted development notes
 
 ## 🎯 Current Status
 
-**Phase**: Foundation Complete ✅
+**Phase**: Core Features Complete ✅
 
-The core architecture is in place:
-- ✅ Dashboard layout with sidebar and topbar
-- ✅ Widget grid system (drag, drop, resize)
-- ✅ Base widget component
-- ✅ Mock data generator for testing
-- ✅ Dark mode support
-- ✅ State management (Zustand + TanStack Query)
-
-**Next**: Building the Top List Scanner widget
+Recent additions:
+- ✅ TradingView Lightweight Charts integration
+- ✅ Alert/Strategy widget with real-time monitoring
+- ✅ Dynamic chart resizing (width & height)
+- ✅ Symbol search and switching
+- ✅ Git worktrees for parallel development
 
 ## 🔧 Development
 
@@ -71,14 +101,15 @@ market-movers/
 ├── app/              # Next.js pages and API routes
 ├── components/       # React components
 │   ├── dashboard/    # Layout components
-│   ├── widgets/      # Widget components
+│   ├── widgets/      # Widget components (6 total)
 │   └── ui/           # shadcn/ui components
 ├── lib/              # Utilities and business logic
-│   ├── api/          # API clients and mock data
+│   ├── services/     # Market data simulator
 │   ├── stores/       # Zustand stores
 │   └── widgets/      # Widget registry
-├── hooks/            # Custom React hooks
-└── types/            # TypeScript type definitions
+├── contexts/         # React contexts
+├── types/            # TypeScript type definitions
+└── tests/            # Playwright tests
 ```
 
 ### Available Scripts
@@ -88,65 +119,42 @@ npm run dev          # Start development server
 npm run build        # Build for production
 npm run start        # Start production server
 npm run lint         # Run ESLint
-
-# Testing (IMPORTANT!)
-npm run test:quick   # Quick Playwright test + screenshots
-npm test             # Full test suite
-npm run test:ui      # Interactive test mode
+npm test             # Run Playwright tests
 ```
 
 ### Adding a Widget
 
-1. Create component in `components/widgets/[name]/`
-2. Define types in `types/widget.types.ts`
-3. Register in `lib/widgets/registry.ts`
-4. Create default template
+1. Create component in `components/widgets/[WidgetName].tsx`
+2. Register in `lib/widgets/index.ts`
+3. Add to `AddWidgetDialog.tsx`
+4. Add defaults to `app/page.tsx`
 
-See [CLAUDE.md](./CLAUDE.md) for detailed instructions.
+See [WIDGETS_GUIDE.md](./WIDGETS_GUIDE.md) for detailed instructions.
 
 ## 🎭 Testing with Playwright
 
-**Playwright is a core part of this project!** Run tests after making changes:
+Run tests after making changes:
 
 ```bash
-npm run test:quick
+npm test             # Full test suite
+npm run test:headed  # Headed mode
 ```
 
-This captures:
-- 📸 Screenshots (dark & light mode)
-- 🐛 Console logs and errors
-- 📊 Detailed test report
+Tests cover:
+- Chart widget functionality
+- Alert widget strategies
+- All widget features
+- Layout management
 
-**Check results:**
-- `test-results/screenshots/` - Visual proof
-- `test-results/test-report.json` - Detailed report
+## 🧪 Market Data Simulation
 
-See [docs/PLAYWRIGHT-TESTING.md](./docs/PLAYWRIGHT-TESTING.md) for full guide.
-
-## 🧪 Testing Without API
-
-The project includes a built-in mock data generator:
+The project includes a built-in market data simulator with 30+ stocks:
 
 ```typescript
-import { MockDataGenerator } from '@/lib/api/mock-data';
+import { marketDataSimulator } from '@/lib/services/market-data-simulator';
 
-const generator = new MockDataGenerator();
-generator.start(1000); // Updates every second
-generator.subscribe((quotes) => {
-  console.log(quotes);
-});
-```
-
-## 🔐 Environment Variables
-
-Create a `.env.local` file:
-
-```bash
-# Optional: Specify port
-PORT=3000
-
-# Future: API keys will go here
-# NEXT_PUBLIC_FMP_API_KEY=your_key
+marketDataSimulator.start(2000); // Updates every 2 seconds
+const stock = marketDataSimulator.getStock('AAPL');
 ```
 
 ## 🗺️ Roadmap
@@ -154,16 +162,36 @@ PORT=3000
 - [x] Project foundation
 - [x] Dashboard layout
 - [x] Widget system
-- [ ] Top List Scanner widget
-- [ ] Real-time data integration
+- [x] Top List Scanner widget
+- [x] Market Overview widget
+- [x] News widget
+- [x] Watchlist widget
+- [x] TradingView chart widget
+- [x] Alert/Strategy widget
+- [ ] Real-time data integration (API)
 - [ ] WebSocket implementation
-- [ ] Scanner configuration
-- [ ] Layout persistence
 - [ ] Authentication (Clerk)
 - [ ] Database (Supabase)
-- [ ] Additional widgets (Chart, Order Book)
-- [ ] Alert system
+- [ ] Candlestick charts
+- [ ] Technical indicators
 - [ ] Backtesting
+
+## 🤝 Git Workflow
+
+This project uses **Git worktrees** for parallel feature development:
+
+```bash
+# Create a new feature worktree
+git worktree add ../market-movers-feature feature/new-feature
+
+# Work in the worktree
+cd ../market-movers-feature
+npm run dev  # Runs on different port
+
+# Merge when ready
+git checkout main
+git merge feature/new-feature
+```
 
 ## 📝 License
 
@@ -175,4 +203,4 @@ This is a personal project. For questions or suggestions, please open an issue.
 
 ---
 
-Built with ❤️ using Next.js and Claude Code
+Built with ❤️ using Next.js, TypeScript, and Claude Code
