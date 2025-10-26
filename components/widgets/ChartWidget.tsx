@@ -47,7 +47,7 @@ export function ChartWidget({ config }: ChartWidgetProps) {
         horzLines: { color: '#374151', style: 1, visible: true },
       },
       width: chartContainerRef.current.clientWidth,
-      height: 200,
+      height: chartContainerRef.current.clientHeight || 200,
       timeScale: {
         timeVisible: true,
         secondsVisible: false,
@@ -69,9 +69,10 @@ export function ChartWidget({ config }: ChartWidgetProps) {
     // Handle resize using ResizeObserver for widget resizing
     const resizeObserver = new ResizeObserver((entries) => {
       if (chartRef.current && chartContainerRef.current) {
-        const { width } = entries[0].contentRect;
+        const { width, height } = entries[0].contentRect;
         chartRef.current.applyOptions({
           width: width,
+          height: height,
         });
       }
     });
@@ -216,9 +217,9 @@ export function ChartWidget({ config }: ChartWidgetProps) {
       isLoading={isLoading}
       footer={`${symbol} • $${formatNumber(stock.price)}`}
     >
-      <div className="space-y-2">
+      <div className="flex flex-col h-full space-y-2">
         {/* Symbol Search */}
-        <div className="flex gap-1">
+        <div className="flex gap-1 flex-shrink-0">
           <Input
             value={inputSymbol}
             onChange={(e) => setInputSymbol(e.target.value.toUpperCase())}
@@ -234,7 +235,7 @@ export function ChartWidget({ config }: ChartWidgetProps) {
         </div>
 
         {/* Stock Info */}
-        <div className="flex items-center justify-between pb-2 border-b">
+        <div className="flex items-center justify-between pb-2 border-b flex-shrink-0">
           <div>
             <div className="text-sm font-bold">{symbol}</div>
             <div className="text-[10px] text-muted-foreground">{stock.name}</div>
@@ -253,10 +254,10 @@ export function ChartWidget({ config }: ChartWidgetProps) {
         </div>
 
         {/* TradingView Chart */}
-        <div ref={chartContainerRef} className="w-full rounded" />
+        <div ref={chartContainerRef} className="w-full flex-1 min-h-0 rounded" />
 
         {/* Chart Stats */}
-        <div className="grid grid-cols-3 gap-2 text-[10px]">
+        <div className="grid grid-cols-3 gap-2 text-[10px] flex-shrink-0">
           <div>
             <div className="text-muted-foreground">High</div>
             <div className="font-semibold">
