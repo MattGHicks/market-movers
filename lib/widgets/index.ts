@@ -9,6 +9,7 @@ import { Watchlist } from '@/components/widgets/Watchlist';
 import { MarketOverview } from '@/components/widgets/MarketOverview';
 import { NewsWidget } from '@/components/widgets/NewsWidget';
 import { ChartWidget } from '@/components/widgets/ChartWidget';
+import { AlertWidget } from '@/components/widgets/AlertWidget';
 import { WidgetRegistryEntry } from '@/types/widget.types';
 
 // Register Top List Scanner
@@ -77,6 +78,20 @@ widgetRegistry.register('chart', {
     name: 'Price Chart',
     settings: {
       symbol: 'AAPL',
+    },
+  },
+} as WidgetRegistryEntry);
+
+// Register Alert Widget
+widgetRegistry.register('alerts', {
+  type: 'alerts',
+  component: AlertWidget as any,
+  defaultConfig: {
+    type: 'alerts',
+    version: '1.0.0',
+    name: 'Alerts',
+    settings: {
+      strategies: [],
     },
   },
 } as WidgetRegistryEntry);
