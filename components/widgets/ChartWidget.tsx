@@ -22,7 +22,7 @@ interface ChartWidgetProps {
 
 export function ChartWidget({ config }: ChartWidgetProps) {
   const { removeWidget, updateWidget } = useWidgetStore();
-  const { getStock, subscribe, unsubscribe } = useMarketData();
+  const { getStock } = useMarketData();
   const [isLoading, setIsLoading] = useState(false);
   const [symbol, setSymbol] = useState(config.settings.symbol || 'AAPL');
   const [inputSymbol, setInputSymbol] = useState(symbol);
@@ -127,30 +127,28 @@ export function ChartWidget({ config }: ChartWidgetProps) {
     }
   }, [priceData, stock]);
 
-  // Subscribe to real-time updates
+  // Update chart with real-time price changes
   useEffect(() => {
-    if (!stock) return;
+    if (!stock || priceData.length === 0) return;
 
-    const updateHandler = (updatedStock: any) => {
-      if (updatedStock.symbol === symbol && priceData.length > 0) {
-        // Update the last price point with new price
+    const interval = setInterval(() => {
+      const updatedStock = getStock(symbol);
+      if (updatedStock) {
+        // Add new price point
         const now = Math.floor(Date.now() / 1000);
         const newPoint = {
           time: now,
           value: updatedStock.price,
         };
 
-        const newData = [...priceData.slice(1), newPoint];
-        setPriceData(newData);
+        setPriceData((prev) => [...prev.slice(1), newPoint]);
       }
-    };
-
-    subscribe(symbol, updateHandler);
+    }, 2000); // Update every 2 seconds
 
     return () => {
-      unsubscribe(symbol, updateHandler);
+      clearInterval(interval);
     };
-  }, [symbol, priceData, stock, subscribe, unsubscribe]);
+  }, [symbol, stock, getStock, priceData.length]);
 
   const handleRefresh = () => {
     setIsLoading(true);
